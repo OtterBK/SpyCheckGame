@@ -4,7 +4,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import 'dotenv/config';
 import { getLogger } from '../utils/logger';
 import checkPermission from '../utils/permission_checker';
-import { createGameCore, createGameSession, createGameTable, getGameTable } from '../games/game_manager';
+import { createGameCore, createGameSession, createGameTable, getGameTable } from '../games/factory';
 const logger = getLogger('CommandManager');
 
 const commands = [

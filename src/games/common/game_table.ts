@@ -1,9 +1,9 @@
-import { Guild, Interaction, TextChannel, VoiceChannel } from "discord.js";
+import { DiscordjsError, Guild, Interaction, Message, TextChannel, VoiceChannel } from "discord.js";
 import { VoiceConnection, joinVoiceChannel, VoiceConnectionStatus, entersState, VoiceConnectionState, DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { GameSession } from "./game_session";
-import { getLogger as createLogger } from "../utils/logger";
-import { destroyVoiceConnect } from "../utils/utility";
-import { GameUI } from "./interfaces/game_ui";
+import { getLogger as createLogger } from "../../utils/logger";
+import { destroyVoiceConnect } from "../../utils/utility";
+import { GameUI } from "./game_ui";
 const logger = createLogger("GameTable");
 
 export class GameTable //게임을 진행하는 일종의 테이블(책상)
@@ -17,6 +17,8 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
   private deleted: boolean = false;
   private game_session: GameSession | null = null;
   private voice_connection: VoiceConnection | null = null;
+
+  private current_ui_message: Message | null = null;
 
   constructor(guild: Guild, channel: TextChannel, voice_channel: VoiceChannel)
   {
@@ -94,7 +96,7 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
     return true;
   }
 
-  showUI(ui: GameUI)
+  sendUI(ui: GameUI)
   {
     //components
     this.channel.send(
@@ -102,7 +104,64 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
         embeds: [ui.embed],
         components: ui.components,
       }
-    );
+    ).then((message: Message) => 
+    {
+      if(message)
+      {
+        this.current_ui_message = message;
+      }
+    });
+  }
+
+  editUI(ui: GameUI)
+  {
+    if(!this.current_ui_message)
+    {
+      logger.error('Cannot edit UI message. current_ui_message is null');
+      return;
+    }
+
+    try
+    {
+      this.current_ui_message.edit(
+        {
+          embeds: [ui.embed],
+          components: ui.components,
+        }
+      );
+    }
+    catch(err: unknown)
+    {
+      if(err instanceof Error)
+      {
+        logger.error(`Cannot edit UI message. ${err.message}`);
+      }
+    }
+  }
+
+  deleteUI()
+  {
+    if(!this.current_ui_message)
+    {
+      return;
+    }
+
+    try
+    {
+      this.current_ui_message.delete();
+    }
+    catch(err: unknown)
+    {
+      if(err instanceof Error)
+      {
+        logger.error(`Cannot edit UI message. ${err.message}`);
+      }
+    }
+  }
+
+  sendMessage(content: string)
+  {
+    this.channel.send({ content: content });
   }
 
   relayInteraction(interaction: Interaction)

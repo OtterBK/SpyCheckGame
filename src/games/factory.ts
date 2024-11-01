@@ -1,8 +1,8 @@
 import { Guild, GuildMember, Interaction, TextChannel, VoiceChannel } from "discord.js";
-import { GameSession } from "./game_session";
-import { GameCore } from "./interfaces/game_core";
+import { GameSession } from "./common/game_session";
+import { GameCore } from "./common/game_core";
 import { SpyCheckCore } from "./spycheck/spycheck_core";
-import { GameTable } from "./game_table";
+import { GameTable } from "./common/game_table";
 
 export function createGameCore(game_id: string): GameCore | null
 {

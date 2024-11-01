@@ -5,7 +5,7 @@ import { registerCommands } from './managers/command_manager';
 import { getLogger } from './utils/logger';
 const logger = getLogger("Main");
 import { handleCommand } from './managers/command_manager';
-import { relayInteraction } from './games/game_manager';
+import { relayInteraction } from './games/factory';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 

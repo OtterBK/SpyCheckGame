@@ -1,6 +1,6 @@
-import { GameCore } from "../interfaces/game_core";
+import { GameCore } from "../common/game_core";
 import { getLogger } from "../../utils/logger";
-import { CycleType } from "../interfaces/game_cycle";
+import { CycleType } from "../common/game_cycle";
 import { ClearRoundCycle, EndingCycle, ExpireCycle, LobbyCycle, PrepareRoundCycle, ProcessRoundCycle, StartCycle } from "./spycheck_cycles";
 const logger = getLogger('SpyCheckCore');
 

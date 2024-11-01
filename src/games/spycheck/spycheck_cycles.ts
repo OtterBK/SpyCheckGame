@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, Interaction } from "discord.js";
-import { GameCycle, LobbyCycleTemplate } from "../interfaces/game_cycle";
-import { GameUI } from "../interfaces/game_ui";
-import { GameCore } from "../interfaces/game_core";
+import { GameCycle, LobbyCycleTemplate } from "../common/game_cycle";
+import { GameUI } from "../common/game_ui";
+import { GameCore } from "../common/game_core";
 
 export class LobbyCycle extends LobbyCycleTemplate
 {

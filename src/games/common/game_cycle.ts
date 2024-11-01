@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, Interaction 
 import { getLogger } from "../../utils/logger";
 import { GameUI } from "./game_ui";
 import { GameCore } from "./game_core";
-import { GameSession } from "../game_session";
+import { GameSession } from "./game_session";
 const logger = getLogger('GameCycle');
 
 export enum CycleType
@@ -145,16 +145,17 @@ export abstract class LobbyCycleTemplate extends GameCycle
       return;
     }
 
+    const id = interaction.customId;
     const member = interaction.member as GuildMember;
-    if(!member)
+    const game_session = this.getGameSession();
+    if(!member || !game_session)
     {
       return;
     }
-    const id = interaction.customId;
 
     if(id === 'join')
     {
-      if(this.getGameSession()?.findUser(member.id))
+      if(game_session.findUser(member.id))
       {
         interaction.reply(
           {
@@ -165,10 +166,10 @@ export abstract class LobbyCycleTemplate extends GameCycle
         return;
       }
 
-      this.getGameSession()?.addParticipant(member);
+      game_session.addParticipant(member);
 
       this.refreshUI();
-      this.getGameSession()?.sendUI(this.ui);
+      game_session.sendUI(this.ui);
 
       interaction.reply(
         {
@@ -182,7 +183,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
     if(id === 'leave')
     {
-      if(!this.getGameSession()?.findUser(member.id))
+      if(!game_session.findUser(member.id))
       {
         interaction.reply(
           {
@@ -193,10 +194,21 @@ export abstract class LobbyCycleTemplate extends GameCycle
         return;
       }
 
-      this.getGameSession()?.removeParticipant(member.id);
+      if(game_session.getHost().id === member.id) //나간게 호스트?
+      {
+        game_session.sendMessage(
+          `\`\`\`🔸 게임의 호스트인 ${game_session.getHost().displayName} 님께서 퇴장하셨어요.\n🔸 이 게임은 더 이상 유효하지 않아요.\`\`\``
+        );
+        
+        game_session.deleteUI();
+        game_session.removeParticipant(member.id);
+        return;
+      }
+
+      game_session.removeParticipant(member.id);
 
       this.refreshUI();
-      this.getGameSession()?.sendUI(this.ui);
+      game_session.sendUI(this.ui);
 
       interaction.reply(
         {
@@ -222,9 +234,9 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
     if(id === 'start')
     {
-      if(this.getGameSession())
+      //TODO 여기부터
 
-        this.exit();
+      this.exit();
       this.goToNextCycle();
 
       interaction.deferReply();

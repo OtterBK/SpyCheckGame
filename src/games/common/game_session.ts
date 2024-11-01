@@ -1,10 +1,10 @@
 import { GuildMember, Interaction } from "discord.js";
 import { createAudioPlayer, AudioPlayer, NoSubscriberBehavior } from "@discordjs/voice";
 import { GameTable } from "./game_table";
-import { GameCore } from "./interfaces/game_core";
-import { GameUI } from "./interfaces/game_ui";
-import { CycleType } from "./interfaces/game_cycle";
-import { getLogger } from "../utils/logger";
+import { GameCore } from "./game_core";
+import { GameUI } from "./game_ui";
+import { CycleType } from "./game_cycle";
+import { getLogger } from "../../utils/logger";
 const logger = getLogger('GameSession');
 
 export class GameSession
@@ -101,16 +101,35 @@ export class GameSession
     this.participants = this.participants.filter((user: GuildMember) => user.id !== user_id);
   }
 
-  sendUIToTable(ui: GameUI, table: GameTable): void
-  {
-    table.showUI(ui);
-  }
-
   sendUI(ui: GameUI): void
   {
     for(const table of this.tables)
     {
-      this.sendUIToTable(ui, table);
+      table.sendUI(ui);
+    }
+  }
+
+  editUI(ui: GameUI): void
+  {
+    for(const table of this.tables)
+    {
+      table.sendUI(ui);
+    }
+  }
+
+  deleteUI(): void
+  {
+    for(const table of this.tables)
+    {
+      table.deleteUI();
+    }
+  }
+
+  sendMessage(content: string): void
+  {
+    for(const table of this.tables)
+    {
+      table.sendMessage(content);
     }
   }
 

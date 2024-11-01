@@ -1,5 +1,5 @@
 import { Interaction } from "discord.js";
-import { GameSession } from "../game_session";
+import { GameSession } from "./game_session";
 import { CycleType, GameCycle } from "./game_cycle";
 import { getLogger } from "../../utils/logger";
 const logger = getLogger('GameCore');
@@ -8,10 +8,10 @@ export abstract class GameCore
 {
   protected game_id: string = 'GameCore';
   protected game_name: string = 'GameCoreName';
-  protected game_session: GameSession | null = null;
   protected cycle_map: Map<CycleType, GameCycle> = new Map<CycleType, GameCycle>();
   protected current_cycle: GameCycle | null = null;
-
+  
+  private game_session: GameSession | null = null;
   private expired: boolean = false;
 
   constructor()
