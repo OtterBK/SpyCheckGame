@@ -1,88 +1,138 @@
-import { Guild, GuildMember, TextBasedChannel, TextChannel, User, VoiceBasedChannel, VoiceChannel } from "discord.js";
-import { GameInfo, getGameInfo } from "./game_data";
-
-const GAME_SESSION_MAP = new Map<string, GameSession>();
-
-export function registerGameSession(game_table: GameTable, game_session: GameSession): void
-{
-  if(getGameSession(game_table.guild.id))
-  {
-    return;
-  }
-
-  GAME_SESSION_MAP.set(game_table.guild.id, game_session);
-  game_session.addTable(game_table);
-}
-
-export function getGameSession(guild_id: string): GameSession | null
-{
-  return GAME_SESSION_MAP.get(guild_id) ?? null;
-}
-
-export function createGameSession(game_type: string, member: GuildMember): GameSession | null
-{
-  const game_info = getGameInfo(game_type);
-  if(!game_info)
-  {
-    return null;
-  }
-
-  return new GameSession(game_info, member);
-}
-
-export class GameTable //게임을 진행하는 일종의 테이블(책상)
-{
-  public guild: Guild;
-  public channel: TextBasedChannel;  
-  public voice_channel: VoiceBasedChannel;
-
-  constructor(guild: Guild, channel: TextBasedChannel, voice_channel: VoiceBasedChannel)
-  {
-    this.guild = guild;
-    this.channel = channel;
-    this.voice_channel = voice_channel;
-  }
-}
+import { GuildMember, Interaction } from "discord.js";
+import { createAudioPlayer, AudioPlayer, NoSubscriberBehavior } from "@discordjs/voice";
+import { GameTable } from "./game_table";
+import { GameCore } from "./interfaces/game_core";
+import { GameUI } from "./interfaces/game_ui";
+import { CycleType } from "./interfaces/game_cycle";
+import { getLogger } from "../utils/logger";
+const logger = getLogger('GameSession');
 
 export class GameSession
 {
-  private game_name: string;
   private host: GuildMember;
-  private participants: Array<User> = [];
+  private audio_player: AudioPlayer;
+  private game_core: GameCore | null = null;
+  
   private tables: Array<GameTable> = [];
-
-  constructor(game_info: GameInfo, host: GuildMember)
+  private participants: Array<GuildMember> = [];
+  
+  constructor(host: GuildMember)
   {
-    this.game_name = game_info.name;
     this.host = host;
+
+    this.audio_player = createAudioPlayer({
+      behaviors: {
+        noSubscriber: NoSubscriberBehavior.Play, //구독 중인 voice가 없어도 재생 계속
+      },
+    });
+
+    this.participants.push(this.host);
   }
 
-  getGameName(): string
+  linkGameCore(game_core: GameCore): void
   {
-    return this.game_name;
+    this.game_core = game_core;
+  }
+
+  startGame(): boolean
+  {
+    if(!this.game_core)
+    {
+      return false;
+    }
+
+    this.game_core.start();
+    return true;
+  }
+
+  getAudioPlayer(): AudioPlayer
+  {
+    return this.audio_player;
+  }
+
+  getParticipants(): Array<GuildMember>
+  {
+    return this.participants;
+  }
+
+  getHost(): GuildMember
+  {
+    return this.host;
   }
 
   addTable(game_table: GameTable): void
   {
-    if(!game_table)
-    {
-      return;
-    }
-
     this.tables.push(game_table);
   }
 
-  sendUI(table: GameTable): void
+  removeTable(guild_id: string): void
   {
-
+    this.tables = this.tables.filter((table: GameTable) => table.guild.id !== guild_id);
   }
 
-  sendUIToTables(): void
+  findUser(user_id: string): GuildMember | null
+  {
+    return this.participants.find((user) => user.id === user_id) ?? null;
+  }
+
+  addParticipant(user: GuildMember): void
+  {
+    this.participants.push(user);
+  }
+
+  getGameName(): string
+  {
+    if(!this.game_core)
+    {
+      return 'CORE_IS_NULL';
+    }
+
+    return this.game_core?.getGameName();
+  }
+
+  removeParticipant(user_id: string): void
+  {
+    if(this.host.id === user_id) //나간게 호스트?
+    {
+      this.expire();
+      return;
+    }
+
+    this.participants = this.participants.filter((user: GuildMember) => user.id !== user_id);
+  }
+
+  sendUIToTable(ui: GameUI, table: GameTable): void
+  {
+    table.showUI(ui);
+  }
+
+  sendUI(ui: GameUI): void
   {
     for(const table of this.tables)
     {
-      this.sendUI(table);
+      this.sendUIToTable(ui, table);
     }
   }
+
+  relayInteraction(interaction: Interaction): void
+  {
+    this.game_core?.onInteractionCreated(interaction);
+  }
+
+  expire(): void
+  {
+    logger.info(`Expiring game session. host id: ${this.host.id}`);
+
+    for(const table of this.tables)
+    {
+      table.expire();
+    }
+
+    this.participants = [];
+
+    this.game_core?.expire();
+    this.game_core = null;
+  }
+
 }
 

@@ -1,0 +1,121 @@
+import { Guild, Interaction, TextChannel, VoiceChannel } from "discord.js";
+import { VoiceConnection, joinVoiceChannel, VoiceConnectionStatus, entersState, VoiceConnectionState, DiscordGatewayAdapterCreator } from "@discordjs/voice";
+import { GameSession } from "./game_session";
+import { getLogger as createLogger } from "../utils/logger";
+import { destroyVoiceConnect } from "../utils/utility";
+import { GameUI } from "./interfaces/game_ui";
+const logger = createLogger("GameTable");
+
+export class GameTable //게임을 진행하는 일종의 테이블(책상)
+{
+  static GAME_TABLE_MAP = new Map<string, GameTable>();
+
+  public guild: Guild;
+  public channel: TextChannel;  
+  public voice_channel: VoiceChannel;
+
+  private deleted: boolean = false;
+  private game_session: GameSession | null = null;
+  private voice_connection: VoiceConnection | null = null;
+
+  constructor(guild: Guild, channel: TextChannel, voice_channel: VoiceChannel)
+  {
+    this.guild = guild;
+    this.channel = channel;
+    this.voice_channel = voice_channel;
+  }
+
+  registerGameSession(game_session: GameSession): void
+  {
+    this.game_session = game_session;
+    game_session.addTable(this);
+
+    this.voice_connection?.subscribe(game_session.getAudioPlayer());
+  }
+
+  getGameSession(): GameSession | null
+  {
+    return this.game_session;
+  }
+
+  createVoiceConnection(): boolean 
+  {
+    const voice_connection = joinVoiceChannel({
+      channelId: this.voice_channel.id,
+      guildId: this.guild.id,
+      adapterCreator: this.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator, 
+    });
+
+    logger.info(`Created Voice Connection. guild_id: ${this.guild.id}, voice_channel_id: ${this.voice_channel.id}`);
+
+    // 보이스 연결이 끊겼을 때 핸들링
+    voice_connection.on(VoiceConnectionStatus.Disconnected, async () => 
+    {
+      if (this.deleted) 
+      {
+        return;
+      }
+
+      try 
+      {
+        logger.info(`Trying voice reconnect. guild_id: ${this.guild.id}`);
+        await Promise.race([
+          entersState(voice_connection, VoiceConnectionStatus.Signalling, 5000),
+          entersState(voice_connection, VoiceConnectionStatus.Connecting, 5000),
+        ]);
+      }
+      catch (error) 
+      {
+        logger.error(`Failed to voice reconnect. guild_id: ${this.guild.id}`);
+        
+        destroyVoiceConnect(this.voice_connection);
+      }
+    });
+
+    // 보이스 커넥션 생성 실패 문제 해결 방안
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => 
+    {
+      const newUdp = Reflect.get(newNetworkState, 'udp');
+      clearInterval(newUdp?.keepAliveInterval);
+    };
+
+    voice_connection.on('stateChange', (oldState: VoiceConnectionState, newState: VoiceConnectionState) => 
+    {
+      const oldNetworking = Reflect.get(oldState, 'networking');
+      const newNetworking = Reflect.get(newState, 'networking');
+
+      oldNetworking?.off('stateChange', networkStateChangeHandler);
+      newNetworking?.on('stateChange', networkStateChangeHandler);
+    });
+
+    this.voice_connection = voice_connection;
+
+    return true;
+  }
+
+  showUI(ui: GameUI)
+  {
+    //components
+    this.channel.send(
+      {
+        embeds: [ui.embed],
+        components: ui.components,
+      }
+    );
+  }
+
+  relayInteraction(interaction: Interaction)
+  {
+    this.getGameSession()?.relayInteraction(interaction);
+  }
+
+  expire(): void
+  {
+    logger.info(`Expiring game session. guild id: ${this.guild.id}`);
+
+    destroyVoiceConnect(this.voice_connection);
+
+    GameTable.GAME_TABLE_MAP.delete(this.guild.id);
+  }
+}

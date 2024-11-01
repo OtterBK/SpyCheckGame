@@ -5,6 +5,7 @@ import { registerCommands } from './managers/command_manager';
 import { getLogger } from './utils/logger';
 const logger = getLogger("Main");
 import { handleCommand } from './managers/command_manager';
+import { relayInteraction } from './games/game_manager';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -23,7 +24,16 @@ client.on('interactionCreate', async (interaction) =>
     const command_name = interaction.commandName;
     handleCommand(command_name, interaction);
   }
+  else
+  {
+    relayInteraction(interaction);
+  }
 });
-
-  
+ 
 client.login(process.env.BOT_TOKEN);
+
+process.on('uncaughtException', (err) => 
+{
+  logger.error(`Cannot Handle Uncaught Error. err: ${err.stack}`);
+}
+);

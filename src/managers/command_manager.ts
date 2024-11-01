@@ -1,9 +1,10 @@
 // src/deploy-commands.ts
-import { REST, Routes, ChatInputCommandInteraction, GuildMember } from 'discord.js';
+import { REST, Routes, ChatInputCommandInteraction, GuildMember, TextChannel, VoiceChannel } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import 'dotenv/config';
 import { getLogger } from '../utils/logger';
-import { createGameSession, GameTable, getGameSession, registerGameSession } from '../games/game_session';
+import checkPermission from '../utils/permission_checker';
+import { createGameCore, createGameSession, createGameTable, getGameTable } from '../games/game_manager';
 const logger = getLogger('CommandManager');
 
 const commands = [
@@ -27,14 +28,12 @@ export async function registerCommands()
 {
   try 
   {
-    logger.info('Registering slash commands');
-
     await rest.put(
       Routes.applicationGuildCommands(process.env.BOT_CLIENT_ID as string, process.env.TEST_GUILD_ID  as string),
       { body: commands }
     );
 
-    logger.info('Registering slash commands');
+    logger.info('Registered slash commands');
   }
   catch (error) 
   {
@@ -52,6 +51,11 @@ export function handleCommand(command_name: string, interaction: ChatInputComman
   {
     return;
   }
+
+  if(checkPermission(interaction) === false)
+  {
+    return;
+  }
     
   handler(interaction);
 }
@@ -63,41 +67,62 @@ command_handlers.set('보드게임', (interaction: ChatInputCommandInteraction) 
   
   if(!guild || !member)
   {
-    interaction.reply({ content: `\`\`\`🔸 개인 채널에서는 사용이 불가능한 명령어에요.\`\`\`` });
+    interaction.reply({ content: `\`\`\`🔸 개인 채널에서는 사용이 불가능한 명령어에요.\`\`\``, ephemeral:true });
     return;
   }
 
-  const channel = interaction.channel;
+  const channel = interaction.channel as TextChannel;
   if(!channel)
   {
-    interaction.reply({ content: `\`\`\`🔸 채팅 채널에서만 사용 가능한 명령어에요.\`\`\`` });
+    interaction.reply({ content: `\`\`\`🔸 채팅 채널에서만 사용 가능한 명령어에요.\`\`\``, ephemeral:true });
     return;
   }
 
   const voice = member.voice;
-  const voice_channel = member.voice.channel;
+  const voice_channel = member.voice.channel as VoiceChannel;
   if(!voice || !voice_channel)
   {
-    interaction.reply({ content: `\`\`\`🔸 음성 채널에 참가한 뒤 명령어를 입력해주세요.\`\`\`` });
+    interaction.reply({ content: `\`\`\`🔸 음성 채널에 참가한 뒤 명령어를 입력해주세요.\`\`\``, ephemeral:true });
+    return;
+  }
+
+  const prev_game_table = getGameTable(guild.id);
+  if(prev_game_table)
+  {
+    interaction.reply({ content: `\`\`\`🔸 이미 이 서버에서 ${prev_game_table.getGameSession()?.getGameName()} 게임을 진행 중이에요.\`\`\``, ephemeral:true });
     return;
   }
 
   const game_id = interaction.options.getString('게임이름') ?? '';
-  const game_session = createGameSession(game_id, member);
-  if(!game_session)
+  const game_core = createGameCore(game_id);
+  if(!game_core)
   {
-    interaction.reply({ content: `\`\`\`🔸 ${game_id} 게임은 없네요...😥\`\`\`` });
+    interaction.reply({ content: `\`\`\`🔸 ${game_id} 게임은 없네요...😥\`\`\``, ephemeral:true });
     return;
   }
 
-  const prev_game_session = getGameSession(guild.id);
-  if(prev_game_session)
+  const game_session = createGameSession(member);
+  const game_table = createGameTable(guild, channel, voice_channel);
+  if(!game_table)
   {
-    interaction.reply({ content: `\`\`\`🔸 이미 이 서버에서 ${prev_game_session.getGameName} 게임을 진행 중이에요.\`\`\`` });
+    logger.error(`Cannot create Game table from ${guild.id}`);
+    interaction.reply({ content: `\`\`\`🔸 Cannot create game table\`\`\``, ephemeral:true });
     return;
   }
 
-  const game_table: GameTable = new GameTable(guild, channel, voice_channel);
+  game_table.createVoiceConnection();
+  game_table.registerGameSession(game_session);
 
-  registerGameSession(game_table, game_session);
+  game_session.linkGameCore(game_core);
+  game_core.linkGameSession(game_session);
+
+  const started = game_session.startGame();
+  if(started === false)
+  {
+    logger.error(`Cannot Start Game Session from ${guild.id}. game name: ${game_session.getGameName()}`);
+    interaction.reply({ content: `\`\`\`🔸 Cannot Start Game Session from ${guild.id}. game name: ${game_session.getGameName()}\`\`\``, ephemeral:true });
+    return;
+  }
+
+  interaction.reply({ content: `\`\`\`🔸 ${game_session.getGameName()} 게임을 시작할게요.\`\`\``, ephemeral:true });
 });
