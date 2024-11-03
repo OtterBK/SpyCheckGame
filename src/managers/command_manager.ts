@@ -19,7 +19,11 @@ const commands = [
         .addChoices(
           { name: '스파이체크', value: 'SPYCHECK' },
         )
-    )
+    ),
+
+  new SlashCommandBuilder()
+    .setName('게임정리')
+    .setDescription('게임 세션을 강제 정리합니다.')
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
@@ -106,7 +110,7 @@ command_handlers.set('보드게임', (interaction: ChatInputCommandInteraction) 
   const prev_game_table = getGameTable(guild.id);
   if(prev_game_table)
   {
-    interaction.reply({ content: `\`\`\`🔸 이미 이 서버에서 ${prev_game_table.getGameSession()?.getGameName()} 게임을 진행 중이에요.\`\`\``, ephemeral:true });
+    interaction.reply({ content: `\`\`\`🔸 이미 이 서버에서 ${prev_game_table.getGameSession()?.getGameName()} 게임을 진행 중이에요.\n🔸 뭔가 문제가 생기신거라면 '/게임정리' 명령어를 사용해보세요.\`\`\``, ephemeral:true });
     return;
   }
 
@@ -149,3 +153,29 @@ command_handlers.set('보드게임', (interaction: ChatInputCommandInteraction) 
 
   interaction.reply({ content: `\`\`\`🔸 ${game_session.getGameName()} 게임을 준비할게요.\`\`\``, ephemeral:true });
 });
+
+command_handlers.set('게임정리', (interaction: ChatInputCommandInteraction) =>
+{
+  const guild = interaction.guild;
+  const member = interaction.member as GuildMember;
+  
+  if(!guild || !member)
+  {
+    interaction.reply({ content: `\`\`\`🔸 개인 채널에서는 사용이 불가능한 명령어에요.\`\`\``, ephemeral:true });
+    return;
+  }
+
+  const table = getGameTable(guild.id);
+  if(!table)
+  {
+    interaction.reply({ content: `\`\`\`🔸 정리할 수 있는 세션이 없어요. guild_id: ${guild.id}\`\`\``, ephemeral:true });
+    return;
+  }
+
+  table.getGameSession()?.expire();
+  table.expire();
+
+  interaction.reply({ content: `\`\`\`🔸 ${member.displayName}님이 세션을 강제 정리했어요.\`\`\``, });
+  return;
+}
+);
