@@ -19,19 +19,24 @@
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
     "libsodium-wrappers": "^0.7.15",
+    "lodash": "^4.17.21",
     "winston": "^3.15.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/lodash": "^4.17.13",
+    "@types/node": "^22.8.6",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",
+    "add": "^2.0.6",
     "eslint": "^9.13.0",
     "eslint-define-config": "^2.1.0",
     "globals": "^15.11.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.12.2"
+    "typescript-eslint": "^8.12.2",
+    "yarn": "^1.22.22"
   }
 }

@@ -154,7 +154,7 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
     {
       if(err instanceof Error)
       {
-        logger.error(`Cannot edit UI message. ${err.message}`);
+        logger.error(`Cannot delete UI message. ${err.message}`);
       }
     }
   }

@@ -1,24 +1,32 @@
-import { GuildMember, Interaction } from "discord.js";
-import { createAudioPlayer, AudioPlayer, NoSubscriberBehavior } from "@discordjs/voice";
+import { Guild, GuildMember, Interaction } from "discord.js";
+import { createAudioPlayer, AudioPlayer, NoSubscriberBehavior, StreamType, createAudioResource } from "@discordjs/voice";
 import { GameTable } from "./game_table";
 import { GameCore } from "./game_core";
 import { GameUI } from "./game_ui";
 import { CycleType } from "./game_cycle";
 import { getLogger } from "../../utils/logger";
+import { generateUUID, getAbsolutePath } from "../../utils/utility";
+import { BGM_TYPE } from "../../managers/bgm_manager";
+import path from "path";
+import { existsSync } from "fs";
 const logger = getLogger('GameSession');
 
 export class GameSession
 {
-  private host: GuildMember;
+  static GAME_SESSIONS: Map<string, GameSession> = new Map<string, GameSession>();
+
+  private uuid: string;
+
+  private host: GuildMember | null = null;
   private audio_player: AudioPlayer;
   private game_core: GameCore | null = null;
   
   private tables: Array<GameTable> = [];
   private participants: Array<GuildMember> = [];
   
-  constructor(host: GuildMember)
+  constructor()
   {
-    this.host = host;
+    this.uuid = generateUUID();
 
     this.audio_player = createAudioPlayer({
       behaviors: {
@@ -26,7 +34,17 @@ export class GameSession
       },
     });
 
-    this.participants.push(this.host);
+    GameSession.GAME_SESSIONS.set(this.uuid, this);
+  }
+  
+  setHost(host: GuildMember)
+  {
+    this.host = host;
+
+    if(this.participants.includes(host) === false)
+    {
+      this.participants.push(this.host);
+    }
   }
 
   linkGameCore(game_core: GameCore): void
@@ -55,7 +73,20 @@ export class GameSession
     return this.participants;
   }
 
-  getHost(): GuildMember
+  isParticipant(user_id: string): boolean
+  {
+    for(const user of this.participants)
+    {
+      if(user.id === user_id)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  getHost(): GuildMember | null
   {
     return this.host;
   }
@@ -92,7 +123,7 @@ export class GameSession
 
   removeParticipant(user_id: string): void
   {
-    if(this.host.id === user_id) //나간게 호스트?
+    if(this.host?.id === user_id) //나간게 호스트?
     {
       this.expire();
       return;
@@ -113,7 +144,7 @@ export class GameSession
   {
     for(const table of this.tables)
     {
-      table.sendUI(ui);
+      table.editUI(ui);
     }
   }
 
@@ -133,14 +164,55 @@ export class GameSession
     }
   }
 
+  playBGM(bgm_type: BGM_TYPE): void
+  {
+    if (!this.audio_player) 
+    {
+      return;
+    }
+
+    const bgm_resource_path = getAbsolutePath(process.env.BGM_PATH); 
+    const bgm_file_path = bgm_resource_path + "/" + bgm_type;
+
+    if(existsSync(bgm_file_path) === false)
+    {
+      logger.error(`The bgm ${bgm_file_path} is not exists`);
+      return;
+    }
+
+    this.audio_player.play(
+      createAudioResource(bgm_file_path,
+        {
+          inputType: StreamType.WebmOpus,
+          inlineVolume: false,
+        }
+      )
+    );
+  }
+
+  stopAudio(): void
+  {
+    if(!this.audio_player) 
+    {
+      return;
+    }
+
+    this.audio_player.stop();
+  }
+
   relayInteraction(interaction: Interaction): void
   {
+    if(this.game_core?.isInGame() === false && this.isParticipant(interaction.user.id) === false)
+    {
+      return;
+    }
+    
     this.game_core?.onInteractionCreated(interaction);
   }
 
   expire(): void
   {
-    logger.info(`Expiring game session. host id: ${this.host.id}`);
+    logger.info(`Expiring game session. host id: ${this.host?.id}`);
 
     for(const table of this.tables)
     {
@@ -151,6 +223,8 @@ export class GameSession
 
     this.game_core?.expire();
     this.game_core = null;
+
+    GameSession.GAME_SESSIONS.delete(this.uuid);
   }
 
 }

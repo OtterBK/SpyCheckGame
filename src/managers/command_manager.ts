@@ -4,7 +4,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import 'dotenv/config';
 import { getLogger } from '../utils/logger';
 import checkPermission from '../utils/permission_checker';
-import { createGameCore, createGameSession, createGameTable, getGameTable } from '../games/factory';
+import { createGameCore, createGameSession, createGameTable, getGameOptionsToCache, getGameTable } from '../games/factory';
 const logger = getLogger('CommandManager');
 
 const commands = [
@@ -17,7 +17,7 @@ const commands = [
         .setDescription('플레이하실 보드게임을 입력해주세요.')
         .setRequired(true)
         .addChoices(
-          { name: '스파이체크', value: 'SPY_CHECK' },
+          { name: '스파이체크', value: 'SPYCHECK' },
         )
     )
 ];
@@ -34,6 +34,23 @@ export async function registerCommands()
     );
 
     logger.info('Registered slash commands');
+  }
+  catch (error) 
+  {
+    logger.error(error);
+  }
+}
+
+export async function registerGlobalCommands() 
+{
+  try 
+  {
+    await rest.put(
+      Routes.applicationCommands(process.env.BOT_CLIENT_ID as string),
+      { body: commands }
+    );
+
+    logger.info('Registered global slash commands');
   }
   catch (error) 
   {
@@ -124,5 +141,11 @@ command_handlers.set('보드게임', (interaction: ChatInputCommandInteraction) 
     return;
   }
 
-  interaction.reply({ content: `\`\`\`🔸 ${game_session.getGameName()} 게임을 시작할게요.\`\`\``, ephemeral:true });
+  const option_cache = getGameOptionsToCache(member.guild.id, game_id); //캐싱해둔 옵션 가져오기
+  if(option_cache)
+  {
+    game_core.setGameOptions(option_cache);
+  }
+
+  interaction.reply({ content: `\`\`\`🔸 ${game_session.getGameName()} 게임을 준비할게요.\`\`\``, ephemeral:true });
 });

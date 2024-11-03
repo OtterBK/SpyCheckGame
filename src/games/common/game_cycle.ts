@@ -1,8 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, Interaction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, GuildMember, Interaction, RepliableInteraction, SelectMenuBuilder, SelectMenuInteraction, StringSelectMenuBuilder } from "discord.js";
 import { getLogger } from "../../utils/logger";
 import { GameUI } from "./game_ui";
 import { GameCore } from "./game_core";
 import { GameSession } from "./game_session";
+import { saveGameOptionsToCache } from "../factory";
+import { deleteMessage } from "../../utils/utility";
+import { BGM_TYPE } from "../../managers/bgm_manager";
 const logger = getLogger('GameCycle');
 
 export enum CycleType
@@ -42,7 +45,6 @@ export abstract class GameCycle
     }
 
     this.getGameCore().doCycle(this.next_cycle_type);
-    return;
   }
 
   getGameCore(): GameCore
@@ -50,17 +52,15 @@ export abstract class GameCycle
     return this.game_core;
   }
 
-  getGameSession(): GameSession | null
+  getGameSession(): GameSession
   {
     return this.game_core.getGameSession();
   }
 
-  abstract enter(): boolean;
-  abstract act(): boolean;
-  abstract exit(): boolean;
-
+  abstract enter(): Promise<boolean>;
+  abstract act(): Promise<boolean>;
+  abstract exit(): Promise<boolean>;
   abstract onInteractionCreated(interaction: Interaction): void
-
 }
 
 export abstract class LobbyCycleTemplate extends GameCycle
@@ -74,212 +74,303 @@ export abstract class LobbyCycleTemplate extends GameCycle
     super(game_core, cycle_name);
   }
 
-  enter(): boolean 
+  async enter(): Promise<boolean> 
   {
-    //embed
     this.ui.embed
       .setColor(0x87CEEB)
       .setTitle(`**🎮 [ ${this.game_title} ]**`)
       .setThumbnail(`${this.game_thumbnail}`)
-      .setFooter(
-        {
-          text: `주최자: ${this.getGameSession()?.getHost().displayName}`,
-          iconURL: `${this.getGameSession()?.getHost().displayAvatarURL()}`
-        });
+      .setFooter({
+        text: `주최자: ${this.getGameSession().getHost()?.displayName}`,
+        iconURL: `${this.getGameSession().getHost()?.displayAvatarURL()}`
+      });
 
     const lobby_participant_btn = new ActionRowBuilder<ButtonBuilder>()
-      .addComponents (
-        new ButtonBuilder()
-          .setCustomId('join')
-          .setLabel('참가')
-          .setStyle(ButtonStyle.Success),
-
-        new ButtonBuilder()
-          .setCustomId('leave')
-          .setLabel('퇴장')
-          .setStyle(ButtonStyle.Danger),
-
-        new ButtonBuilder()
-          .setCustomId('rule_book')
-          .setLabel('게임 설명')
-          .setStyle(ButtonStyle.Primary),
+      .addComponents(
+        new ButtonBuilder().setCustomId('join').setLabel('참가').setStyle(ButtonStyle.Success),
+        new ButtonBuilder().setCustomId('leave').setLabel('퇴장').setStyle(ButtonStyle.Danger),
+        new ButtonBuilder().setCustomId('rule_book').setLabel('게임 설명').setStyle(ButtonStyle.Primary),
       );
 
-    //components
     const lobby_host_btn = new ActionRowBuilder<ButtonBuilder>()
-      .addComponents (
-        new ButtonBuilder()
-          .setCustomId('start')
-          .setLabel('시작')
-          .setStyle(ButtonStyle.Secondary),
-
-        new ButtonBuilder()
-          .setCustomId('setting')
-          .setLabel('설정')
-          .setStyle(ButtonStyle.Secondary),
+      .addComponents(
+        new ButtonBuilder().setCustomId('start').setLabel('시작').setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId('setting').setLabel('설정').setStyle(ButtonStyle.Secondary),
       );
 
     this.ui.components.push(lobby_participant_btn);
     this.ui.components.push(lobby_host_btn);
 
+    //game option select menu
+
+    this.getGameSession().playBGM(BGM_TYPE.LOBBY_CREATED);
+
     return true;
   }
 
-  act(): boolean 
+  async act(): Promise<boolean>  
   {
     this.refreshUI();
-    this.getGameSession()?.sendUI(this.ui);
-
-    return false; //stop cycling
+    this.getGameSession().sendUI(this.ui);
+    return false; //Lobby Cycle은 'start' 눌렀을 때만 명시적으로 다음 cycle로 간다.
   }
 
-  exit(): boolean 
+  async exit(): Promise<boolean>  
   {
     return true;
   }
 
   onInteractionCreated(interaction: Interaction): void 
   {
-    if(!interaction.isButton() && !interaction.isStringSelectMenu())
+    if(!interaction.isRepliable() || 
+      (!interaction.isButton() && !interaction.isStringSelectMenu())
+    )
     {
       return;
     }
 
     const id = interaction.customId;
     const member = interaction.member as GuildMember;
-    const game_session = this.getGameSession();
-    if(!member || !game_session)
+    if(!member)
     {
       return;
     }
 
-    if(id === 'join')
+    switch (id) 
     {
-      if(game_session.findUser(member.id))
-      {
-        interaction.reply(
-          {
-            content: `\`\`\`🔸 이미 ${this.game_title} 게임에 참가 중이에요.\`\`\``,
-            ephemeral: true
-          }
-        );
-        return;
-      }
-
-      game_session.addParticipant(member);
-
-      this.refreshUI();
-      game_session.sendUI(this.ui);
-
-      interaction.reply(
-        {
-          content: `\`\`\`🔸 ${this.game_title} 게임에 참가했어요.\`\`\``,
-          ephemeral: true
-        }
-      );
-      
+    case 'join':
+      this.handleJoin(interaction, member);
+      return;
+    case 'leave':
+      this.handleLeave(interaction, member);
+      return;
+    case 'rule_book':
+      this.handleRuleBook(interaction);
+      return;
+    case 'start':
+      this.handleStart(interaction, member);
+      return;
+    case 'setting':
+      this.handleSetting(interaction, member);
+      return;
+    case 'option_type_select':
+      this.handleOptionTypeSelect(interaction, member);
       return;
     }
 
-    if(id === 'leave')
+    if(id.startsWith('option_value_select'))
     {
-      if(!game_session.findUser(member.id))
-      {
-        interaction.reply(
-          {
-            content: `\`\`\`🔸 ${this.game_title} 게임에 참가 중이지 않네요.\`\`\``,
-            ephemeral: true
-          }
-        );
-        return;
-      }
-
-      if(game_session.getHost().id === member.id) //나간게 호스트?
-      {
-        game_session.sendMessage(
-          `\`\`\`🔸 게임의 호스트인 ${game_session.getHost().displayName} 님께서 퇴장하셨어요.\n🔸 이 게임은 더 이상 유효하지 않아요.\`\`\``
-        );
-        
-        game_session.deleteUI();
-        game_session.removeParticipant(member.id);
-        return;
-      }
-
-      game_session.removeParticipant(member.id);
-
-      this.refreshUI();
-      game_session.sendUI(this.ui);
-
-      interaction.reply(
-        {
-          content: `\`\`\`🔸 ${this.game_title} 게임에서 떠났어요.\`\`\``,
-          ephemeral: true
-        }
-      );
-
-      return;
-    }
-
-    if(id === 'rule_book')
-    {
-      interaction.reply(
-        {
-          content: `${this.getGameRuleDescription()}`,
-          ephemeral: true
-        }
-      );
-
-      return;
-    }
-
-    if(id === 'start')
-    {
-      //TODO 여기부터
-
-      this.exit();
-      this.goToNextCycle();
-
-      interaction.deferReply();
-      
-      return;
-    }
-
-    if(id === 'setting')
-    {
-      return;
+      this.handleOptionValueSelect(interaction, member);
     }
   }
 
-  refreshUI()
+  private handleJoin(interaction: RepliableInteraction, member: GuildMember)
   {
-    let participants_status = `\`\`\`📋 참가자 목록\n\n`;
+    if(this.getGameSession().findUser(member.id))
+    {
+      interaction.reply({ content: `\`\`\`🔸 이미 ${this.game_title} 게임에 참가 중이에요.\`\`\``, ephemeral: true });
+      return;
+    }
 
-    const game_session = this.getGameSession();
-    if(!game_session)
+    const players_count = this.getGameSession().getParticipants.length;
+    if(players_count >= this.getGameCore().getMaxPlayers())
+    {
+      interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임은 최대 ${this.getGameCore().getMaxPlayers()}명까지만 할 수 있어요.\`\`\``, ephemeral: true });
+      return;
+    }
+
+    this.getGameSession().addParticipant(member);
+    this.refreshUI();
+    this.getGameSession().editUI(this.ui);
+    interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임에 참가했어요.\`\`\``, ephemeral: true });
+
+    this.getGameSession().playBGM(BGM_TYPE.JOIN);
+  }
+
+  private handleLeave(interaction: RepliableInteraction, member: GuildMember)
+  {
+    if(!this.getGameSession().findUser(member.id))
+    {
+      interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임에 참가 중이지 않네요.\`\`\``, ephemeral: true });
+      return;
+    }
+
+    if(this.checkHost(member.id))
+    {
+      this.getGameSession().sendMessage(`\`\`\`🔸 게임의 호스트인 ${this.getGameSession().getHost()?.displayName} 님께서 퇴장하셨어요.\n🔸 이 게임은 더 이상 유효하지 않아요.\`\`\``);
+      this.getGameSession().deleteUI();
+      this.getGameSession().removeParticipant(member.id);
+      return;
+    }
+
+    this.getGameSession().removeParticipant(member.id);
+    this.refreshUI();
+    this.getGameSession().editUI(this.ui);
+    interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임에서 떠났어요.\`\`\``, ephemeral: true });
+  }
+
+  private handleRuleBook(interaction: RepliableInteraction)
+  {
+    interaction.reply({ content: `${this.getGameRuleDescription()}`, ephemeral: true });
+  }
+
+  private handleStart(interaction: RepliableInteraction, member: GuildMember)
+  {
+    if(this.checkHost(member.id) === false)
+    {
+      interaction.reply({
+        content: `\`\`\`🔸 게임의 호스트인 ${this.getGameSession().getHost()?.displayName} 님만 게임 시작이 가능합니다.\`\`\``,
+        ephemeral: true
+      });
+      return;
+    }
+
+    const players_count = this.getGameSession().getParticipants().length;
+    if(players_count < this.getGameCore().getMinPlayers())
+    {
+      interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
+      return;
+    }
+
+    if(players_count > this.getGameCore().getMaxPlayers())
+    {
+      interaction.reply({
+        content: `\`\`\`🔸 ${this.game_title} 게임은 최대 ${this.getGameCore().getMaxPlayers()}명까지만 할 수 있어요.\n🔸 애초에 참가가 안될텐데 어떻게 하신거죠? 이 경우엔 게임을 다시 시작해야해요... 😥\`\`\``,
+        ephemeral: true
+      });
+      return;
+    }
+
+    this.getGameSession().sendMessage(`\`\`\`🔸 ${this.game_title} 게임을 시작할게요! 🙂\`\`\``);
+
+    this.getGameSession().playBGM(BGM_TYPE.GAME_START);
+
+    this.getGameCore().gameStarted();
+    this.getGameCore().getGameData().setInGameUsers(this.getGameSession().getParticipants());
+
+    this.exit();
+    this.goToNextCycle();
+
+    deleteMessage((interaction as ButtonInteraction).message); 
+  }
+
+  private handleSetting(interaction: RepliableInteraction, member: GuildMember)
+  {
+    const game_options = this.getGameCore().getGameOptions();
+    if(game_options.getOptions().length === 0)
+    {
+      interaction.reply({
+        content: `\`\`\`🔸 ${this.game_title} 게임은 설정할 수 있는 항목이 없어요.\`\`\``,
+        ephemeral: true
+      });
+      return;
+    }
+
+    const option_type_select_menu = game_options.buildUI();
+
+    if(this.checkHost(member.id) === false)
+    {
+      interaction.reply({
+        content: `\`\`\`🔸 참가자는 설정 확인만 가능해요.\`\`\``,
+        embeds: [option_type_select_menu.embed],
+        ephemeral: true
+      });
+    }
+    else
+    {
+      interaction.reply({
+        embeds: [option_type_select_menu.embed],
+        components: option_type_select_menu.components,
+        ephemeral: true
+      });
+    }
+  }
+
+  private handleOptionTypeSelect(interaction: RepliableInteraction, member: GuildMember)
+  {
+    const select_interaction = interaction as SelectMenuInteraction;
+    if(!select_interaction)
     {
       return;
     }
 
-    for(const user of game_session.getParticipants())
+    const option_id = select_interaction.values[0];
+    const option = this.getGameCore().getGameOptions().getOption(option_id);
+    if(!option)
+    {
+      return;
+    }
+
+    const option_value_select_menu = option.buildUI();
+    select_interaction.update({
+      embeds: [option_value_select_menu.embed],
+      components: option_value_select_menu.components,
+    });
+  }
+
+  private handleOptionValueSelect(interaction: RepliableInteraction, member: GuildMember)
+  {
+    if(this.checkHost(member.id) === false) //???
+    {
+      logger.warn(`${member.id} tried to select option. but this user is not host`);
+      return;
+    }
+
+    const select_interaction = interaction as SelectMenuInteraction;
+    if(!select_interaction)
+    {
+      return;
+    }
+
+    const option_id = select_interaction.customId.split('#')[1];
+    const option = this.getGameCore().getGameOptions().getOption(option_id);
+    if(!option)
+    {
+      return;
+    }
+
+    const selected_value = select_interaction.values[0];
+    option.selectChoice(selected_value);
+
+    const option_type_select_menu = this.getGameCore().getGameOptions().buildUI();
+    select_interaction.update({
+      embeds: [option_type_select_menu.embed],
+      components: option_type_select_menu.components,
+    });
+
+    if(select_interaction.guild)
+    {
+      saveGameOptionsToCache(select_interaction.guild.id, this.getGameCore().getGameId(), this.getGameCore().getGameOptions());
+    }
+  }
+
+  private checkHost(user_id: string)
+  {
+    return this.getGameSession().getHost()?.id === user_id;
+  }
+
+  private refreshUI()
+  {
+    let participants_status = `\`\`\`📋 참가자 목록\n\n`;
+
+    for(const user of this.getGameSession().getParticipants())
     {
       participants_status += `🔹 ${user.displayName}\n`;
     }
     participants_status += `\`\`\``;
 
-    this.ui.embed
-      .setDescription(participants_status);
+    this.ui.embed.setDescription(participants_status);
   }
 
-  setGameTitle(title: string)
+  public setGameTitle(title: string)
   {
     this.game_title = title;
   }
 
-  setGameThumbnail(thumbnail: string)
+  public setGameThumbnail(thumbnail: string)
   {
     this.game_thumbnail = thumbnail;
   }
 
-  abstract getGameRuleDescription(): string;
-
+  protected abstract getGameRuleDescription(): string;
 }
