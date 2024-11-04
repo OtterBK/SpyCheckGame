@@ -171,7 +171,7 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
 
   expire(): void
   {
-    logger.info(`Expiring game session. guild id: ${this.guild.id}`);
+    logger.info(`Expiring game table. guild id: ${this.guild.id}`);
 
     destroyVoiceConnect(this.voice_connection);
 
