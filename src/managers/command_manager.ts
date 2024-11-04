@@ -185,7 +185,7 @@ command_handlers.set('게임정리', (interaction: ChatInputCommandInteraction) 
 }
 );
 
-command_handlers.set('새로고침', (interaction: ChatInputCommandInteraction) =>
+command_handlers.set('새로고침', async (interaction: ChatInputCommandInteraction) =>
   {
     const guild = interaction.guild;
     const member = interaction.member as GuildMember;
@@ -217,24 +217,12 @@ command_handlers.set('새로고침', (interaction: ChatInputCommandInteraction) 
       return;
     }
 
-    const updated = game_user.updateInteraction(interaction);//private menu 갱신
-    if(updated)
-    {
-      interaction.reply({
-        content: '\`\`\`🔸 개인 화면을 갱신했어요!\`\`\`',
-        ephemeral: true
-      });
+    await game_user.sendInteractionReply(interaction, {
+      content: '\`\`\`🔸 개인 화면을 갱신했어요!\`\`\`',
+      ephemeral: true
+    });
 
-      game_user.sendPrivateUI(game_user.getCurrentPrivateUI());
-    }
-    else
-    {
-      interaction.reply({
-        content: '\`\`\`🔸 개인 화면 갱신에 실패했어요...아마 게임에서 탈락하신 것 같아요.\`\`\`',
-        ephemeral: true
-      });
-
-    }
+    game_user.sendPrivateUI(game_user.getCurrentPrivateUI());
 
     return;
   }

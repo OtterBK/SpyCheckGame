@@ -73,11 +73,16 @@ export class GameUser
         )
     }
 
-    sendPrivateUI(ui: GameUI | null): boolean
+    async sendPrivateUI(ui: GameUI | null)
     {
         if(!ui)
         {
             return false;
+        }
+
+        if(ui !== interaction_refresh_ui)
+        {
+            this.current_private_ui = ui;
         }
 
         if(this.isInteractionValid() === false)
@@ -86,19 +91,24 @@ export class GameUser
             return false;
         }
 
-        this.current_private_ui = ui;
         this.interaction!.followUp(
             {
                 embeds: [ui.embed],
                 components: ui.components,
                 ephemeral: true
             }
-        );
+        ).then(() => 
+        {
+            return;
+        })
+        .catch(err => {
+            logger.error(`Cannot send private ui err: ${err.message}. user_id: ${this.getId()}`);
+        });
 
         return true;
     }
 
-    sendPrivateMessage(content: string): boolean
+    async sendPrivateMessage(content: string)
     {
         if(this.isInteractionValid() === false)
         { 
@@ -111,27 +121,52 @@ export class GameUser
                 content: content,
                 ephemeral: true
             }
-        );
+        )
+        .then(() => 
+        {
+            return;
+        })
+        .catch(err => {
+            logger.error(`Cannot send private message err: ${err.message}. user_id: ${this.getId()}`);
+        });
 
         return true;
     }
 
-    sendInteractionReply(interaction: Interaction, replyOptions: InteractionReplyOptions): void 
+    sendInteractionReply(interaction: Interaction, replyOptions: InteractionReplyOptions): Promise<void> | null
     {
         if (!interaction.isRepliable())
         {
-            logger.error(`Cannot reply to interaction ${interaction.type}`);
-            return;
+            logger.error(`Cannot reply to interaction. do not update interaction. ${interaction.type}. user_id: ${this.getId()}`);
+            return null;
         }
     
-        interaction.reply(replyOptions)
+        return interaction.reply(replyOptions)
         .then(() => 
         {
             this.updateInteraction(interaction);
         })
         .catch(err => {
-            logger.error(`Cannot reply interaction. err: ${err.message}`);
+            logger.error(`Cannot reply interaction. do not update interaction. err: ${err.message}. user_id: ${this.getId()}`);
         });         
+    }
+
+    sendInteractionDeferReply(interaction: Interaction): Promise<void> | null
+    {
+        if (!interaction.isRepliable())
+        {
+            logger.error(`Cannot defer reply to interaction. do not update interaction. ${interaction.type}. user_id: ${this.getId()}`);
+            return null;
+        }
+
+        return interaction.deferReply()
+        .then(() => 
+        {
+            this.updateInteraction(interaction);
+        })
+        .catch(err => {
+            logger.error(`Cannot defer reply interaction. do not update interaction. err: ${err.message}. user_id: ${this.getId()}`);
+        }); 
     }
 
     getCurrentPrivateUI()
@@ -146,7 +181,7 @@ export class GameUser
             return false;
         }
 
-        if(!interaction)
+        if(!interaction || !interaction.isRepliable())
         {
             return false;
         }
@@ -177,17 +212,17 @@ export class GameUser
         this.refresh_alert_timer = setInterval(() => 
         {  
             ++this.timer_count;
-            if(this.timer_count >= 10) //10분 경과?
-            {
-                this.sendPrivateUI(interaction_refresh_ui);
-            }
-            else if(this.timer_count >= 15) //15분 경과?
+            if(this.timer_count >= 15) //15분 경과?
             {
                 if(this.refresh_alert_timer)
                 {
                     clearInterval(this.refresh_alert_timer);
                 }
                 this.sendDirectUI(interaction_expired_alert_ui);
+            }
+            else if(this.timer_count >= 10) //10분 경과?
+            {
+                this.sendPrivateUI(interaction_refresh_ui);
             }
             
         }, 60000);

@@ -2,6 +2,11 @@ import { ChatInputCommandInteraction, PermissionsBitField, GuildMember } from 'd
 
 export const checkPermission = (interaction: ChatInputCommandInteraction): boolean =>
 {
+  if(!interaction.guild)
+  {
+    return true;
+  }
+
   const botMember = interaction.guild?.members.me as GuildMember;
 
   // 메시지 전송 권한 확인

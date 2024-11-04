@@ -131,7 +131,15 @@ export class GameSession
       return;
     }
 
-    this.participants = this.participants.filter((game_user: GameUser) => game_user.getId() !== user_id);
+    this.participants = this.participants.filter((game_user: GameUser) => 
+    {
+      if(game_user.getId() === user_id)
+      {
+        game_user.expire();
+      }
+
+      return game_user.getId() !== user_id;
+    });
   }
 
   sendUI(ui: GameUI): void
@@ -212,19 +220,14 @@ export class GameSession
     this.game_core?.onInteractionCreated(interaction);
 
     const game_user = this.findUser(interaction.user.id); 
-    if(game_user)
+    if(game_user && interaction.isButton() && interaction.customId === 'refresh_private_menu')
     {
-      game_user.updateInteraction(interaction as RepliableInteraction);//private menu 갱신
+      game_user.sendInteractionReply(interaction, {
+        content: '\`\`\`🔸 개인 화면을 갱신했어요!\`\`\`',
+        ephemeral: true
+      });
 
-      if(interaction.isButton() && interaction.customId === 'refresh_private_menu')
-      {
-        interaction.reply({
-          content: '\`\`\`🔸 개인 화면을 갱신했어요!\`\`\`',
-          ephemeral: true
-        });
-
-        return;
-      }
+      return;
     }
   }
 

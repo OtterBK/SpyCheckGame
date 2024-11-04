@@ -166,9 +166,10 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
   private handleJoin(interaction: RepliableInteraction, member: GuildMember)
   {
-    if(this.getGameSession().findUser(member.id))
+    const game_user = this.getGameSession().findUser(member.id);
+    if(game_user)
     {
-      interaction.reply({ content: `\`\`\`🔸 이미 ${this.game_title} 게임에 참가 중이에요.\`\`\``, ephemeral: true });
+      game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 이미 ${this.game_title} 게임에 참가 중이에요.\`\`\``, ephemeral: true });
       return;
     }
 
@@ -179,10 +180,10 @@ export abstract class LobbyCycleTemplate extends GameCycle
       return;
     }
 
-    this.getGameSession().addParticipant(member).updateInteraction(interaction);
+    const new_game_user = this.getGameSession().addParticipant(member);
     this.refreshUI();
     this.getGameSession().editUI(this.ui);
-    interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임에 참가했어요.\`\`\``, ephemeral: true });
+    new_game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.game_title} 게임에 참가했어요.\`\`\``, ephemeral: true });
 
     this.getGameSession().playBGM(BGM_TYPE.JOIN);
   }
@@ -211,14 +212,28 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
   private handleRuleBook(interaction: RepliableInteraction)
   {
-    interaction.reply({ content: `${this.getGameRuleDescription()}`, ephemeral: true });
+    const game_user = this.getGameSession().findUser(interaction.user.id);
+    if(game_user)
+    {
+      game_user.sendInteractionReply(interaction, { content: `${this.getGameRuleDescription()}`, ephemeral: true });
+    }
+    else
+    {
+      interaction.reply({ content: `${this.getGameRuleDescription()}`, ephemeral: true });
+    }
   }
 
   private handleStart(interaction: RepliableInteraction, member: GuildMember)
   {
+    const game_user = this.getGameSession().findUser(interaction.user.id);
+    if(!game_user)
+    {
+      return;
+    }
+
     if(this.checkHost(member.id) === false)
     {
-      interaction.reply({
+       game_user.sendInteractionReply(interaction, {
         content: `\`\`\`🔸 게임의 호스트인 ${this.getGameSession().getHost()?.displayName} 님만 게임 시작이 가능합니다.\`\`\``,
         ephemeral: true
       });
@@ -228,13 +243,13 @@ export abstract class LobbyCycleTemplate extends GameCycle
     const players_count = this.getGameSession().getParticipants().length;
     if(players_count < this.getGameCore().getMinPlayers())
     {
-      interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
+      //  game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.game_title} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
       // return;
     }
 
     if(players_count > this.getGameCore().getMaxPlayers())
     {
-      interaction.reply({
+       game_user.sendInteractionReply(interaction, {
         content: `\`\`\`🔸 ${this.game_title} 게임은 최대 ${this.getGameCore().getMaxPlayers()}명까지만 할 수 있어요.\n🔸 애초에 참가가 안될텐데 어떻게 하신거죠? 이 경우엔 게임을 다시 시작해야해요... 😥\`\`\``,
         ephemeral: true
       });
@@ -242,6 +257,11 @@ export abstract class LobbyCycleTemplate extends GameCycle
     }
 
     this.getGameSession().sendMessage(`\`\`\`🔸 ${this.game_title} 게임을 시작할게요! 🙂\`\`\``);
+
+    game_user.sendInteractionReply(interaction, {
+      content: `\`\`\`🔸 게임을 시작했어요.\`\`\``,
+      ephemeral: true
+    });
 
     this.getGameSession().playBGM(BGM_TYPE.GAME_START);
 
@@ -256,10 +276,16 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
   private handleSetting(interaction: RepliableInteraction, member: GuildMember)
   {
+    const game_user = this.getGameSession().findUser(interaction.user.id);
+    if(!game_user)
+    {
+      return;
+    }
+
     const game_options = this.getGameCore().getGameOptions();
     if(game_options.getOptions().length === 0)
     {
-      interaction.reply({
+      game_user.sendInteractionReply(interaction, {
         content: `\`\`\`🔸 ${this.game_title} 게임은 설정할 수 있는 항목이 없어요.\`\`\``,
         ephemeral: true
       });
@@ -270,7 +296,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
     if(this.checkHost(member.id) === false)
     {
-      interaction.reply({
+      game_user.sendInteractionReply(interaction, {
         content: `\`\`\`🔸 참가자는 설정 확인만 가능해요.\`\`\``,
         embeds: [option_type_select_menu.embed],
         ephemeral: true
@@ -278,7 +304,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
     }
     else
     {
-      interaction.reply({
+      game_user.sendInteractionReply(interaction, {
         embeds: [option_type_select_menu.embed],
         components: option_type_select_menu.components,
         ephemeral: true

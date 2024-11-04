@@ -51,15 +51,6 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
     const answer_select_time = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.ANSWER_SELECT_TIME).getSelectedValueAsNumber();
 
-    const answer_select_alert_ui = new GameUI();
-   answer_select_alert_ui.embed
-      .setColor(0xFFD044)
-      .setTitle('**📝 [ 답변 선택을 기다리는 중 ]**')
-      .setFooter({text: `${++this.round_num}번째 라운드에요.`});
-
-      this.getGameSession().playBGM(BGM_TYPE.GRAND_FATHER_11_MONTH);
-   answer_select_alert_ui.startTimer(this.getGameSession(), '모두에게 질문지를 보냈어요.\n \n질문에 대한 적절한 답변을 선택해주세요!\n', answer_select_time * 1000);
-
     for(const user of this.getGameData().getInGameUsers())
     {
       const answer_select_ui = new GameUI();
@@ -86,6 +77,17 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
       user.sendPrivateUI(answer_select_ui);
     }
+
+    await sleep(2000);
+
+    const answer_select_alert_ui = new GameUI();
+   answer_select_alert_ui.embed
+      .setColor(0xFFD044)
+      .setTitle('**📝 [ 답변 선택을 기다리는 중 ]**')
+      .setFooter({text: `${++this.round_num}번째 라운드에요.`});
+
+      this.getGameSession().playBGM(BGM_TYPE.GRAND_FATHER_11_MONTH);
+   answer_select_alert_ui.startTimer(this.getGameSession(), '모두에게 질문지를 보냈어요.\n \n질문에 대한 적절한 답변을 선택해주세요!\n', answer_select_time * 1000);
 
     const [answer_timer, answer_timer_cancel] = cancelableSleep(answer_select_time * 1000);
     this.answer_timer_canceler = answer_timer_cancel;
@@ -295,7 +297,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
         this.getGameSession().playBGM(BGM_TYPE.CHAT);
       }
 
-      interaction.reply({
+      game_user.sendInteractionReply(interaction, {
         content: `\`\`\`🔸 선택한 답변: ${selected_value}\`\`\``,
         ephemeral: true
       })
@@ -320,14 +322,14 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
       if(interaction.customId === 'vote')
       {
-        interaction.reply({
+        game_user.sendInteractionReply(interaction, {
           content: `\`\`\`🔸 선택한 플레이어: ${this.getGameData().getDisplayName(selected_value) ?? selected_value}\`\`\``,
           ephemeral: true
         })
       }
       else
       {
-        interaction.reply({
+        game_user.sendInteractionReply(interaction, {
           content: `\`\`\`🔸 투표를 스킵했어요.\`\`\``,
           ephemeral: true
         })

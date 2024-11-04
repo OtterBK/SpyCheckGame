@@ -29,11 +29,13 @@ export class StartCycle extends SpyCheckCycle
       .setTitle('스파이 선택 중...');
 
     this.getGameSession().sendUI(spy_choosing_alert_ui);
+
+    await sleep(2000);
       
     //스파이 선정
     this.pickRandomSpy();
 
-    await sleep(3000);
+    await sleep(2000);
 
     //커스텀 질문 여부
     const custom_question_enabled = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.CUSTOM_QUESTION_ENABLE).getSelectedValueAsBoolean();
@@ -139,18 +141,18 @@ export class StartCycle extends SpyCheckCycle
       {
         if(custom_question_ui.custom_question_text === '')
         {
-          interaction.reply({ content: `\`\`\`🔸 먼저 질문부터 작성한 뒤 제출해주세요.\`\`\``, ephemeral: false });
+          game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 먼저 질문부터 작성한 뒤 제출해주세요.\`\`\``, ephemeral: false });
           return;
         }
 
         if(custom_question_ui.confirmed)
         {
-          interaction.reply({ content: `\`\`\`🔸 질문을 수정했어요.\`\`\``, ephemeral: false })
+          game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 질문을 수정했어요.\`\`\``, ephemeral: false })
         }
         else
         {
           custom_question_ui.confirm();
-          interaction.reply({ content: `\`\`\`🔸 질문을 제출했어요.\n🔸 제한 시간 내에 다시 제출을 눌러 질문을 수정할 수 있어요!\`\`\``, ephemeral: false });
+          game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 질문을 제출했어요.\n🔸 제한 시간 내에 다시 제출을 눌러 질문을 수정할 수 있어요!\`\`\``, ephemeral: false });
         }
         
       }
@@ -192,14 +194,6 @@ export class StartCycle extends SpyCheckCycle
 
     this.getGameSession().playBGM(BGM_TYPE.PLING);
 
-    const spy_choosing_alert_ui = new GameUI();
-    spy_choosing_alert_ui.embed
-      .setColor(0xFFD044)
-      .setTitle('**📝 [ 질문 작성을 기다리는 중 ]**');
-
-    this.getGameSession().playBGM(BGM_TYPE.GRAND_FATHER_11_MONTH);
-    spy_choosing_alert_ui.startTimer(this.getGameSession(), '모두에게 질문 작성 화면을 보냈어요.\n \n스파이를 찾아내기 위해 사용할 질문을 작성해주세요.\n', custom_question_time * 1000);
-
     for(const user of this.getGameData().getInGameUsers())
     {
       const custom_question_ui = new SpyCheckCustomQuestionUI();
@@ -207,6 +201,16 @@ export class StartCycle extends SpyCheckCycle
 
       user.sendPrivateUI(custom_question_ui);
     }
+
+    await sleep(2000);
+
+    const spy_choosing_alert_ui = new GameUI();
+    spy_choosing_alert_ui.embed
+      .setColor(0xFFD044)
+      .setTitle('**📝 [ 질문 작성을 기다리는 중 ]**');
+
+    this.getGameSession().playBGM(BGM_TYPE.GRAND_FATHER_11_MONTH);
+    spy_choosing_alert_ui.startTimer(this.getGameSession(), '모두에게 질문 작성 화면을 보냈어요.\n \n스파이를 찾아내기 위해 사용할 질문을 작성해주세요.\n', custom_question_time * 1000);
 
     await sleep(custom_question_time * 1000);
     spy_choosing_alert_ui.stopTimer();
