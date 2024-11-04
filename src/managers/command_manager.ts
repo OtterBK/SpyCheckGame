@@ -23,7 +23,11 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('게임정리')
-    .setDescription('게임 세션을 강제 정리합니다.')
+    .setDescription('게임 세션을 강제 정리합니다.'),
+
+    new SlashCommandBuilder()
+    .setName('새로고침')
+    .setDescription('개인 화면을 갱신합니다.')
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
@@ -152,6 +156,7 @@ command_handlers.set('보드게임', (interaction: ChatInputCommandInteraction) 
   }
 
   interaction.reply({ content: `\`\`\`🔸 ${game_session.getGameName()} 게임을 준비할게요.\`\`\``, ephemeral:true });
+  game_session.findUser(member.id)?.updateInteraction(interaction);
 });
 
 command_handlers.set('게임정리', (interaction: ChatInputCommandInteraction) =>
@@ -179,3 +184,58 @@ command_handlers.set('게임정리', (interaction: ChatInputCommandInteraction) 
   return;
 }
 );
+
+command_handlers.set('새로고침', (interaction: ChatInputCommandInteraction) =>
+  {
+    const guild = interaction.guild;
+    const member = interaction.member as GuildMember;
+    
+    if(!guild || !member)
+    {
+      interaction.reply({ content: `\`\`\`🔸 개인 채널에서는 사용이 불가능한 명령어에요.\`\`\``, ephemeral:true });
+      return;
+    }
+  
+    const table = getGameTable(guild.id);
+    if(!table)
+    {
+      interaction.reply({ content: `\`\`\`🔸 이 서버는 게임을 진행 중이지 않아요.\`\`\``, ephemeral:true });
+      return;
+    }
+  
+    const game_session = table.getGameSession();
+    if(!game_session)
+    {
+      interaction.reply({ content: `\`\`\`🔸 이 서버는 진행 중인 게임 세션이 없어요.\`\`\``, ephemeral:true });
+      return;
+    }
+
+    const game_user = game_session.findUser(interaction.user.id); 
+    if(!game_user)
+    {
+      interaction.reply({ content: `\`\`\`🔸 게임 참가 중이 아니에요.\`\`\``, ephemeral:true });
+      return;
+    }
+
+    const updated = game_user.updateInteraction(interaction);//private menu 갱신
+    if(updated)
+    {
+      interaction.reply({
+        content: '\`\`\`🔸 개인 화면을 갱신했어요!\`\`\`',
+        ephemeral: true
+      });
+
+      game_user.sendPrivateUI(game_user.getCurrentPrivateUI());
+    }
+    else
+    {
+      interaction.reply({
+        content: '\`\`\`🔸 개인 화면 갱신에 실패했어요...아마 게임에서 탈락하신 것 같아요.\`\`\`',
+        ephemeral: true
+      });
+
+    }
+
+    return;
+  }
+  );

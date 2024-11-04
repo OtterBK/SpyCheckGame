@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, GuildMember, Interaction, RepliableInteraction, SelectMenuBuilder, SelectMenuInteraction, StringSelectMenuBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, GuildMember, Interaction, RepliableInteraction, SelectMenuInteraction } from "discord.js";
 import { getLogger } from "../../utils/logger";
 import { GameUI } from "./game_ui";
 import { GameCore } from "./game_core";
@@ -179,7 +179,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
       return;
     }
 
-    this.getGameSession().addParticipant(member);
+    this.getGameSession().addParticipant(member).updateInteraction(interaction);
     this.refreshUI();
     this.getGameSession().editUI(this.ui);
     interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임에 참가했어요.\`\`\``, ephemeral: true });
@@ -229,7 +229,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
     if(players_count < this.getGameCore().getMinPlayers())
     {
       interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
-      return;
+      // return;
     }
 
     if(players_count > this.getGameCore().getMaxPlayers())
@@ -355,7 +355,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
     for(const user of this.getGameSession().getParticipants())
     {
-      participants_status += `🔹 ${user.displayName}\n`;
+      participants_status += `🔹 ${user.getDisplayName()}\n`;
     }
     participants_status += `\`\`\``;
 

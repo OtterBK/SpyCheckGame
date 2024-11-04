@@ -1,5 +1,4 @@
-import { GuildMember } from "discord.js";
-import { cloneDeep } from "lodash";
+import { GameUser } from "./game_user";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class GameData
@@ -8,32 +7,32 @@ export class GameData
 
   constructor()
   {
-    this.data_map.set('INGAME_USERS', Array<GuildMember>());
+    this.data_map.set('INGAME_USERS', Array<GameUser>());
   }
 
-  setInGameUsers(users: Array<GuildMember> )
+  setInGameUsers(game_users: Array<GameUser> )
   {
-    const ingame_users:Array<GuildMember> = [];
-    for(const user of users)
+    const ingame_users:Array<GameUser> = [];
+    for(const game_user of game_users)
     {
-      ingame_users.push(user);
+      ingame_users.push(game_user);
     }
 
     this.data_map.set('INGAME_USERS', ingame_users);
   }
 
-  getInGameUsers(): Array<GuildMember>
+  getInGameUsers(): Array<GameUser>
   {
     return this.data_map.get('INGAME_USERS');
   }
 
-  isInGameUsers(user_id: string): boolean
+  isInGameUser(user_id: string): boolean
   {
-    const ingame_users:Array<GuildMember> = this.data_map.get('INGAME_USERS');
+    const ingame_users:Array<GameUser> = this.data_map.get('INGAME_USERS');
 
-    for(const user of ingame_users)
+    for(const game_user of ingame_users)
     {
-      if(user.id === user_id)
+      if(game_user.getId() === user_id)
       {
         return true;
       }
@@ -42,15 +41,30 @@ export class GameData
     return false;
   }
 
+  findUser(user_id: string): GameUser | null
+  {
+    const ingame_users:Array<GameUser> = this.data_map.get('INGAME_USERS');
+
+    for(const game_user of ingame_users)
+    {
+      if(game_user.getId() === user_id)
+      {
+        return game_user;
+      }
+    }
+
+    return null;
+  }
+
   getDisplayName(user_id: string): string | null
   {
-    const ingame_users:Array<GuildMember> = this.data_map.get('INGAME_USERS');
+    const ingame_users:Array<GameUser> = this.data_map.get('INGAME_USERS');
 
-    for(const user of ingame_users)
+    for(const game_user of ingame_users)
     {
-      if(user.id === user_id)
+      if(game_user.getId() === user_id)
       {
-        return user.displayName;
+        return game_user.getDisplayName();
       }
     }
 
@@ -59,9 +73,16 @@ export class GameData
 
   removeInGameUser(user_id: string)
   {
-    const ingame_users:Array<GuildMember> = this.data_map.get('INGAME_USERS');
+    const ingame_users:Array<GameUser> = this.data_map.get('INGAME_USERS');
 
-    this.setInGameUsers(ingame_users.filter((user: GuildMember) => user.id !== user_id));
+    this.setInGameUsers(ingame_users.filter((game_user: GameUser) => {
+      if(game_user.getId() === user_id)
+      {
+        game_user.expire();
+      }
+
+      return game_user.getId() !== user_id;
+    }));
   }
   
   expire()

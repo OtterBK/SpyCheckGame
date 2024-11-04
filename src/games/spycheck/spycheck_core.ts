@@ -1,12 +1,16 @@
 import { GameCore } from "../common/game_core";
 import { getLogger } from "../../utils/logger";
 import { CycleType } from "../common/game_cycle";
-import { ClearRoundCycle, EndingCycle, ExpireCycle, LobbyCycle, PrepareRoundCycle, ProcessRoundCycle, StartCycle } from "./spycheck_cycles";
 import { GameOption, OptionChoice } from "../common/game_options";
 import { SpyCheckGameData } from "./spycheck_data";
 import { SPYCHECK_OPTION } from "./spycheck_options";
-import { GameData } from "../common/game_data";
-import { getGameOptionsToCache } from "../factory";
+import { ClearRoundCycle } from "./cycles/clear_round_cycle";
+import { EndingCycle } from "./cycles/ending_cycle";
+import { ExpireCycle } from "./cycles/expire_cycle";
+import { LobbyCycle } from "./cycles/lobby_cycle";
+import { PrepareRoundCycle } from "./cycles/prepare_round_cycle";
+import { ProcessRoundCycle } from "./cycles/process_round_cycle";
+import { StartCycle } from "./cycles/start_cycle";
 const logger = getLogger('SpyCheckCore');
 
 export class SpyCheckCore extends GameCore

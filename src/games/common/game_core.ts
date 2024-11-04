@@ -1,4 +1,4 @@
-import { GuildMember, Interaction } from "discord.js";
+import { Interaction } from "discord.js";
 import { GameSession } from "./game_session";
 import { CycleType, GameCycle } from "./game_cycle";
 import { getLogger } from "../../utils/logger";
@@ -40,7 +40,7 @@ export abstract class GameCore
       return;
     }
 
-    if(this.isInGame() && this.game_data.isInGameUsers(interaction.user.id) === false) //겜 중에는 인게임인 사람만
+    if(this.isInGame() && this.game_data.isInGameUser(interaction.user.id) === false) //겜 중에는 인게임인 사람만
     {
       return;
     }

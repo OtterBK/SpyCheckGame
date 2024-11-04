@@ -1,6 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, EmbedBuilder, Message, SelectMenuBuilder } from "discord.js";
 import { GameSession } from "./game_session";
-import { clearInterval } from "timers";
 import { BGM_TYPE } from "../../managers/bgm_manager";
 
 export class GameUI

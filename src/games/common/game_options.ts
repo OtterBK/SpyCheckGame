@@ -1,4 +1,4 @@
-import { ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder } from "discord.js";
+import { ActionRowBuilder, StringSelectMenuBuilder } from "discord.js";
 import { GameUI } from "./game_ui";
 import { getLogger } from "../../utils/logger";
 const logger = getLogger('GameOptions');
@@ -53,6 +53,7 @@ export class GameOptions
       option_status += `🔧 ${option.getOptionName()}:\n🔹 ${selected_choice_value}\n\n`;
     }
     ui.embed.setDescription(`${option_status}`);
+    ui.embed.setFooter({text: '설정 값은 봇이 재시작 될 때까지 유효해요.'});
 
     const option_type_select_menu = new ActionRowBuilder<StringSelectMenuBuilder>()
       .addComponents(

@@ -1,4 +1,4 @@
-import { DiscordjsError, Guild, Interaction, Message, TextChannel, VoiceChannel } from "discord.js";
+import { Guild, Interaction, Message, TextChannel, VoiceChannel } from "discord.js";
 import { VoiceConnection, joinVoiceChannel, VoiceConnectionStatus, entersState, VoiceConnectionState, DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { GameSession } from "./game_session";
 import { getLogger as createLogger } from "../../utils/logger";

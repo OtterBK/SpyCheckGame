@@ -1,12 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, User } from "discord.js";
 import { GameData } from "../common/game_data";
 import { GameUI } from "../common/game_ui";
 import * as fs from 'fs';
 import { getLogger } from "../../utils/logger";
-import { getAbsolutePath, getRandomElement, getRandomNumber, shuffleArray } from "../../utils/utility";
+import { getAbsolutePath, getRandomElement, shuffleArray } from "../../utils/utility";
 import { ANSWER_SELECT_CHOICES, ANSWER_SELECT_MENU, ANSWER_TYPES } from "./answer_select_type";
-import path, { dirname } from "path";
-import { cloneDeep } from "lodash";
+import { GameUser } from "../common/game_user";
 const logger = getLogger('SpyCheckData');
 
 export class Question
@@ -61,29 +60,29 @@ export class SpyCheckGameData extends GameData
     this.data_map.set('SPY_LIST_STRING', '');
   }
 
-  addSpy(user: GuildMember | User): void
+  addSpy(game_user: GameUser): void
   {
-    this.data_map.get('SPY_LIST').push(user.id);
+    this.data_map.get('SPY_LIST').push(game_user.getId());
 
     const spy_list_string = this.data_map.get('SPY_LIST_STRING');
-    this.data_map.set('SPY_LIST_STRING', spy_list_string + '\n' + user.displayName);
+    this.data_map.set('SPY_LIST_STRING', spy_list_string + '\n' + game_user.getDisplayName());
   }
 
-  isSpy(user_id: string): boolean
+  isSpy(game_user: GameUser): boolean
   {
-    return this.data_map.get('SPY_LIST').includes(user_id);
+    return this.data_map.get('SPY_LIST').includes(game_user.getId());
   }
 
-  registerCustomQuestionUI(user_id: string, question_ui: SpyCheckCustomQuestionUI): void
-  {
-    const map = this.data_map.get('CUSTOM_QUESTION_UI_MAP');
-    map.set(user_id, question_ui);
-  }
-
-  getCustomQuestionUI(user_id: string): SpyCheckCustomQuestionUI | null
+  registerCustomQuestionUI(game_user: GameUser, question_ui: SpyCheckCustomQuestionUI): void
   {
     const map = this.data_map.get('CUSTOM_QUESTION_UI_MAP');
-    return map.get(user_id);
+    map.set(game_user.getId(), question_ui);
+  }
+
+  getCustomQuestionUI(game_user: GameUser): SpyCheckCustomQuestionUI | null
+  {
+    const map = this.data_map.get('CUSTOM_QUESTION_UI_MAP');
+    return map.get(game_user.getId());
   }
 
   addQuestion(question: Question): void
@@ -120,12 +119,18 @@ export class SpyCheckGameData extends GameData
     }
   }
 
+  discardQuestList(count: number)  
+  {
+    let question_list = this.getQuestionList();
+    question_list.splice(count);
+  }
+
   popQuestion(): Question | null
   {
     return this.getQuestionList().pop() ?? null;
   }
 
-  getAnswerSelectComponent(answer_type: number, users: Array<GuildMember> | null = null): ActionRowBuilder<StringSelectMenuBuilder> | null
+  getAnswerSelectComponent(answer_type: number, users: Array<GameUser> | null = null): ActionRowBuilder<StringSelectMenuBuilder> | null
   {
     if(answer_type === 4 && users) //참가자 선택 방식
     {
@@ -137,7 +142,7 @@ export class SpyCheckGameData extends GameData
         .addOptions(
             users.map(user => 
             {
-              return new StringSelectMenuOptionBuilder().setLabel(user.displayName).setValue(user.displayName);
+              return new StringSelectMenuOptionBuilder().setLabel(user.getDisplayName()).setValue(user.getDisplayName());
             })
         )
       );
@@ -153,11 +158,11 @@ export class SpyCheckGameData extends GameData
     return comp;
   }
 
-  getRandomAnswer(answer_type: number, users: Array<GuildMember> | null = null)
+  getRandomAnswer(answer_type: number, users: Array<GameUser> | null = null)
   {
     if(answer_type === 4 && users) //참가자 선택 방식
     {
-      return getRandomElement(users).displayName;
+      return getRandomElement(users).getDisplayName();
     }
 
     const choices = ANSWER_SELECT_CHOICES.get(answer_type) ?? null;
@@ -173,10 +178,10 @@ export class SpyCheckGameData extends GameData
 
   }
 
-  addUserAnswerSelect(user_id: string, value: string): number
+  addUserAnswerSelect(game_user: GameUser, value: string): number
   {
     const map: Map<string, string> = this.data_map.get('ANSWER_SELECT_MAP');
-    map.set(user_id, value);
+    map.set(game_user.getId(), value);
 
     return map.size;
   }
@@ -187,15 +192,16 @@ export class SpyCheckGameData extends GameData
     map.clear();
   }
 
-  getAnswerSelectMap(): Map<string, string>
+  getAnswerSelectedValue(game_user: GameUser): string | null
   {
-    return this.data_map.get('ANSWER_SELECT_MAP');
+    const map: Map<string, string> = this.data_map.get('ANSWER_SELECT_MAP');
+    return map.get(game_user.getId()) ?? null;
   }
 
-  addUserVoted(user_id: string, value: string): number
+  addUserVoted(game_user: GameUser, value: string): number
   {
     const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    map.set(user_id, value);
+    map.set(game_user.getId(), value);
 
     return map.size;
   }
@@ -211,13 +217,13 @@ export class SpyCheckGameData extends GameData
     return this.data_map.get('VOTE_MAP');
   }
 
-  getVotedCount(user_id: string): number
+  getVotedCount(game_user: GameUser): number
   {
     let voted_count = 0;
     const map: Map<string, string> = this.data_map.get('VOTE_MAP');
     for(const value of map.values())
     {
-      if(value === user_id)
+      if(value === game_user.getId())
       {
         ++voted_count;
       }

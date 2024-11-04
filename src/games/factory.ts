@@ -81,17 +81,6 @@ export function getGameTable(guild_id: string): GameTable | null
 
 
 const GAME_OPTIONS_CACHE_MAP = new Map<string, Map<string, GameOptions>>(); 
-class GameOptionsCache
-{
-  public game_id: string;
-  public game_options: GameOptions;
-
-  constructor(game_id: string, game_options: GameOptions)
-  {
-    this.game_id = game_id;
-    this.game_options = game_options;
-  }
-}
 
 export function saveGameOptionsToCache(guild_id: string, game_id: string, game_options: GameOptions)
 {

@@ -1,14 +1,13 @@
-import { Guild, GuildMember, Interaction } from "discord.js";
+import { GuildMember, Interaction, RepliableInteraction } from "discord.js";
 import { createAudioPlayer, AudioPlayer, NoSubscriberBehavior, StreamType, createAudioResource } from "@discordjs/voice";
 import { GameTable } from "./game_table";
 import { GameCore } from "./game_core";
 import { GameUI } from "./game_ui";
-import { CycleType } from "./game_cycle";
 import { getLogger } from "../../utils/logger";
 import { generateUUID, getAbsolutePath } from "../../utils/utility";
 import { BGM_TYPE } from "../../managers/bgm_manager";
-import path from "path";
 import { existsSync } from "fs";
+import { GameUser } from "./game_user";
 const logger = getLogger('GameSession');
 
 export class GameSession
@@ -22,7 +21,7 @@ export class GameSession
   private game_core: GameCore | null = null;
   
   private tables: Array<GameTable> = [];
-  private participants: Array<GuildMember> = [];
+  private participants: Array<GameUser> = [];
   
   constructor()
   {
@@ -41,9 +40,9 @@ export class GameSession
   {
     this.host = host;
 
-    if(this.participants.includes(host) === false)
+    if(this.isParticipant(host.id) === false)
     {
-      this.participants.push(this.host);
+      this.participants.push(new GameUser(host));
     }
   }
 
@@ -68,16 +67,16 @@ export class GameSession
     return this.audio_player;
   }
 
-  getParticipants(): Array<GuildMember>
+  getParticipants(): Array<GameUser>
   {
     return this.participants;
   }
 
   isParticipant(user_id: string): boolean
   {
-    for(const user of this.participants)
+    for(const game_user of this.participants)
     {
-      if(user.id === user_id)
+      if(game_user.getId() === user_id)
       {
         return true;
       }
@@ -101,14 +100,17 @@ export class GameSession
     this.tables = this.tables.filter((table: GameTable) => table.guild.id !== guild_id);
   }
 
-  findUser(user_id: string): GuildMember | null
+  findUser(user_id: string): GameUser | null
   {
-    return this.participants.find((user) => user.id === user_id) ?? null;
+    return this.participants.find((game_user) => game_user.getId() === user_id) ?? null;
   }
 
-  addParticipant(user: GuildMember): void
+  addParticipant(user: GuildMember): GameUser
   {
-    this.participants.push(user);
+    const game_user = new GameUser(user);
+    this.participants.push(game_user);
+
+    return game_user;
   }
 
   getGameName(): string
@@ -129,7 +131,7 @@ export class GameSession
       return;
     }
 
-    this.participants = this.participants.filter((user: GuildMember) => user.id !== user_id);
+    this.participants = this.participants.filter((game_user: GameUser) => game_user.getId() !== user_id);
   }
 
   sendUI(ui: GameUI): void
@@ -202,17 +204,38 @@ export class GameSession
 
   relayInteraction(interaction: Interaction): void
   {
-    if(this.game_core?.isInGame() === false && this.isParticipant(interaction.user.id) === false)
-    {
-      return;
-    }
-    
+    // if(this.game_core?.isInGame() === false && this.isParticipant(interaction.user.id) === false) 
+    // {
+    //   return;
+    // }
+   
     this.game_core?.onInteractionCreated(interaction);
+
+    const game_user = this.findUser(interaction.user.id); 
+    if(game_user)
+    {
+      game_user.updateInteraction(interaction as RepliableInteraction);//private menu 갱신
+
+      if(interaction.isButton() && interaction.customId === 'refresh_private_menu')
+      {
+        interaction.reply({
+          content: '\`\`\`🔸 개인 화면을 갱신했어요!\`\`\`',
+          ephemeral: true
+        });
+
+        return;
+      }
+    }
   }
 
   expire(): void
   {
     logger.info(`Expiring game session. host id: ${this.host?.id}`);
+
+    for(const game_user of this.participants)
+    {
+      game_user.expire();
+    }
 
     for(const table of this.tables)
     {
