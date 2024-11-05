@@ -32,9 +32,11 @@ export class SpyCheckCore extends GameCore
   {
     if(!this.getGameSession())
     {
-      logger.info(`Cannot start game ${this.game_id} core. game session is null`);
+      logger.error(`Cannot start game ${this.game_id} core. game session is null`);
       return;
     }
+    
+    logger.error(`start ${this.game_id} from game core`);
 
     this.initializeGameOptions();
     this.initializeCycle(); //initialize chain

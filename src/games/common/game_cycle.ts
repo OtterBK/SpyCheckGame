@@ -25,6 +25,8 @@ export abstract class GameCycle
   private cycle_name: string;
   private next_cycle_type: CycleType | null = null;
 
+  private expired: boolean = false;
+
   constructor(game_core: GameCore, cycle_name: string)
   {
     this.game_core = game_core;
@@ -55,6 +57,16 @@ export abstract class GameCycle
   getGameSession(): GameSession
   {
     return this.game_core.getGameSession();
+  }
+
+  expire(): void
+  {
+    this.expired = true;
+  }
+
+  isExpired(): boolean
+  {
+    return this.expired;
   }
 
   abstract enter(): Promise<boolean>;

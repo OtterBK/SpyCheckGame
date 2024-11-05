@@ -4,6 +4,8 @@ import { GameCore } from "./common/game_core";
 import { SpyCheckCore } from "./spycheck/spycheck_core";
 import { GameTable } from "./common/game_table";
 import { GameOptions } from "./common/game_options";
+import { getLogger } from "../utils/logger";
+const logger = getLogger('GameFactory')
 
 export function createGameCore(game_id: string): GameCore | null
 {
@@ -11,6 +13,8 @@ export function createGameCore(game_id: string): GameCore | null
   {
     return new SpyCheckCore();
   }
+
+  logger.error(`Cannot create game core. ${game_id} is not exist`);
 
   return null;
 }

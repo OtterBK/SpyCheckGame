@@ -99,6 +99,12 @@ export abstract class GameCore
       return;
     }
 
+    if(cycle.isExpired())
+    {
+      logger.error(`${this.game_id} called expired cycle enter. stop cycle chain`);
+      return;
+    }
+
     this.current_cycle = cycle;
 
     let keep_going: boolean = true;
@@ -109,11 +115,23 @@ export abstract class GameCore
       return;
     }
 
+    if(cycle.isExpired())
+    {
+      logger.error(`${this.game_id} called expired cycle act. stop cycle chain`);
+      return;
+    }
+
     keep_going = await cycle.act();
     if(keep_going === false)
     {
       return;
     }
+
+    if(cycle.isExpired())
+      {
+        logger.error(`${this.game_id} called expired cycle exit. stop cycle chain`);
+        return;
+      }
 
     keep_going = await cycle.exit();
     if(keep_going === false)
