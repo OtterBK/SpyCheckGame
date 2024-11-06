@@ -1,4 +1,6 @@
-[
+{
+  "normal": 
+  [
     {
       "place": {
           "name": "여객기",
@@ -9,7 +11,7 @@
           { "name": "부기장", "image": "empty" },
           { "name": "스튜어디스", "image": "empty" },
           { "name": "잠이 많은 승객", "image": "empty" },
-          { "name": "승객", "image": "empty" },
+          { "name": "일반석 승객", "image": "empty" },
           { "name": "일등석 승객", "image": "empty" },
           { "name": "우등석 승객", "image": "empty" },
           { "name": "밀입국자", "image": "empty" },
@@ -20,24 +22,8 @@
     },
     {
       "place": {
-        "name": "은행",
-        "image": "https://i.pinimg.com/originals/f0/d1/47/f0d147690e2ffbe4bbcc1a829f929d90.png"
-      },
-      "roles": [
-        { "name": "은행원", "image": "empty" },
-        { "name": "고객", "image": "empty" },
-        { "name": "지점장", "image": "empty" },
-        { "name": "컨설턴트", "image": "empty" },
-        { "name": "VIP 고객", "image": "empty" },
-        { "name": "금고 관리인", "image": "empty" },
-        { "name": "무장 강도", "image": "empty" },
-        { "name": "보안관", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
         "name": "레스토랑",
-        "image": "https://ww.namu.la/s/2b54a2802f976502c217f3a62217e5ac94d4b4a7315d5f736bcce55cffd446b7918ea83918d606990825fcee0c5aa977c555a7d8d4168ce555ee23fe101810c7bf7f80ce782d5c7736b1bb0864e7338552ad6d7f113d996806d154b1f971f54416bfc47e0ecf6cd5d4e6c2b8fcb9df31"
+        "image": ""
       },
       "roles": [
         { "name": "셰프", "image": "empty" },
@@ -54,58 +40,24 @@
     },
     {
       "place": {
-        "name": "십자군 군대",
-        "image": "empty"
+        "name": "은행",
+        "image": ""
       },
       "roles": [
-        { "name": "붙잡힌 사라센인", "image": "empty" },
-        { "name": "하인", "image": "empty" },
-        { "name": "수도승", "image": "empty" },
-        { "name": "궁수", "image": "empty" },
-        { "name": "대지주", "image": "empty" },
-        { "name": "주교", "image": "empty" },
-        { "name": "기사", "image": "empty" },
-        { "name": "시민", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "국밥집",
-        "image": "https://w.namu.la/s/2fd18d51403921ceac01fcc23d13fa103dc0945ed7a3a0eb10306ff5564eea024cc56dcceb5dd3f98f02f3a6c9813992511e972028e986726b3af2b3e79540017672f6b46c3194946ab7e80f2ffa502cabd052f4e4f07ea1e43d9c7d3e67640a9da3aef3931c695329b78850a3c5d268"
-      },
-      "roles": [
-        { "name": "주방장", "image": "empty" },
-        { "name": "주방 보조", "image": "empty" },
-        { "name": "알바생", "image": "empty" },
-        { "name": "배달원", "image": "empty" },
-        { "name": "회사원", "image": "empty" },
-        { "name": "대학생", "image": "empty" },
-        { "name": "포장 손님", "image": "empty" },
-        { "name": "술 취한 아저씨", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "군대",
-        "image": "https://w.namu.la/s/1048f7451fdb3ae68c37dfea5cb482b033e605241898bc1dc2bd156048daa775adf4404cb52b7e09e4162fc733619f44871fa514ac2d012a903c5e394db469b32a15b3e69b9c6b89049cea14ac916153c898a27ee8718f8100e7161021a6b0c7b3aed3976e2441b4a95060b7b906a169"
-      },
-      "roles": [
-        { "name": "이병", "image": "empty" },
-        { "name": "말년 병장", "image": "empty" },
-        { "name": "관심 병사", "image": "empty" },
-        { "name": "소대장", "image": "empty" },
-        { "name": "초병", "image": "empty" },
-        { "name": "면회객", "image": "empty" },
-        { "name": "행정 보급관", "image": "empty" },
-        { "name": "PX병", "image": "empty" },
-        { "name": "의무병", "image": "empty" },
-        { "name": "급양병", "image": "empty" }
+        { "name": "은행원", "image": "empty" },
+        { "name": "고객", "image": "empty" },
+        { "name": "지점장", "image": "empty" },
+        { "name": "컨설턴트", "image": "empty" },
+        { "name": "VIP 고객", "image": "empty" },
+        { "name": "금고 관리인", "image": "empty" },
+        { "name": "무장 강도", "image": "empty" },
+        { "name": "보안관", "image": "empty" }
       ]
     },
     {
       "place": {
         "name": "경찰서",
-        "image": "https://w.namu.la/s/5e09043e1d8bd18e9b9ee52145433425dd0fbe9da65b0c807b7b9600adb63a761fdb0de57a7b3320f5018b1e3f01be77dba9a4e409284ef7b15d14f592a20de16e2d295aba44cd903be30749cb00bb8859e31f686d35d3411e436753122fd047"
+        "image": ""
       },
       "roles": [
         { "name": "경찰관", "image": "empty" },
@@ -115,13 +67,14 @@
         { "name": "사기꾼", "image": "empty" },
         { "name": "사기 피해자", "image": "empty" },
         { "name": "기자", "image": "empty" },
-        { "name": "용의자", "image": "empty" }
+        { "name": "건달", "image": "empty" },
+        { "name": "변호사", "image": "empty" }
       ]
     },
     {
       "place": {
         "name": "해적선",
-        "image": "https://lh3.googleusercontent.com/proxy/mi6uA14F9uxBcJDtRk1GBKZvkG3bDLW8L3mdYR-J7X1SuzeUbOtRI0iRekg1aM8RUuMDh_tLQG9OlCSh-2BwaeEaPR8Ex9i9Ll6spCMXCxO_wHpV2h3003s9jzOTwO-alaepN9acg5Hc_KrKmAZLeJstkq9vXFU2vB1cfVHeBZbYJXO39vTw5WEguwlth6tMalfExcfAQXvKKSskd5fnJ3ovVxqQcSafHlgs0_7-Icaxi_KS_APAmCmoLPq2Zp4y0_0HncFJ_4qMysfH3A0c2OVCiomKxKRg9LHDhFa701uyXmgjDQLUSQ017MPMGPbkFKRhdaIZJOyChGxvoc4UPGVHBQY6Nr_FB1Vm-jrVERNS1U7FHUU2BMExypQJCkFA8owft0G4y7BeZgVlDeJ6uVjk-xtgjmwvVJirlUwswQCqX9mCxyRAc4qE6RGrQwrm_Kh10QfL8n0cIX03Sfjrn927cf8hNKD1dac"
+        "image": ""
       },
       "roles": [
         { "name": "허세부리는 선장", "image": "empty" },
@@ -139,7 +92,7 @@
     {
       "place": {
         "name": "편의점",
-        "image": "https://d1orkkc34keaka.cloudfront.net/images/2018/01/04/1515048796_e1870792fb36b0e384a6d18695f11072.jpeg"
+        "image": ""
       },
       "roles": [
         { "name": "알바생", "image": "empty" },
@@ -156,7 +109,7 @@
     {
       "place": {
         "name": "영화촬영장",
-        "image": "http://lampers.co.kr/wp-content/uploads/2018/07/DSC_1451.jpg"
+        "image": ""
       },
       "roles": [
         { "name": "감독", "image": "empty" },
@@ -172,40 +125,6 @@
     },
     {
       "place": {
-        "name": "휴게소",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "차량 정비공", "image": "empty" },
-        { "name": "주유소 직원", "image": "empty" },
-        { "name": "음식점 직원", "image": "empty" },
-        { "name": "휴게소 직원", "image": "empty" },
-        { "name": "트럭 운전수", "image": "empty" },
-        { "name": "여행객", "image": "empty" },
-        { "name": "폭주족", "image": "empty" },
-        { "name": "화장실 청소부", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "남극기지",
-        "image": "https://file2.nocutnews.co.kr/newsroom/image/2014/02/12/20140212114226757393.jpg"
-      },
-      "roles": [
-        { "name": "연구소장", "image": "empty" },
-        { "name": "연구원", "image": "empty" },
-        { "name": "탐험 대장", "image": "empty" },
-        { "name": "기상학자", "image": "empty" },
-        { "name": "설인", "image": "empty" },
-        { "name": "펭귄", "image": "empty" },
-        { "name": "의료 담당", "image": "empty" },
-        { "name": "통신원", "image": "empty" },
-        { "name": "실험체 관리원", "image": "empty" },
-        { "name": "남극곰", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
         "name": "지하철",
         "image": "empty"
       },
@@ -217,13 +136,14 @@
         { "name": "대학생", "image": "empty" },
         { "name": "회사원", "image": "empty" },
         { "name": "행상인", "image": "empty" },
+        { "name": "역무원", "image": "empty" },
         { "name": "공익 요원", "image": "empty" }
       ]
     },
     {
       "place": {
         "name": "유람선",
-        "image": "https://post-phinf.pstatic.net/MjAxOTA4MjJfMjY1/MDAxNTY2NDYxMDU1MjU2.QqYaR_urrYBaq8bFeWttPKUBnK2hxXJDc0vKnI2nWbgg.coJfImYNa7sw2yHe8fsaF3uxXl7_CCzZ1kwJ2npvKkkg.JPEG/IMG_1428.jpg?type=w1200"
+        "image": ""
       },
       "roles": [
         { "name": "선장", "image": "empty" },
@@ -240,25 +160,8 @@
     },
     {
       "place": {
-        "name": "극장",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "감독", "image": "empty" },
-        { "name": "무대 설치 직원", "image": "empty" },
-        { "name": "유명 배우", "image": "empty" },
-        { "name": "악단 지휘자", "image": "empty" },
-        { "name": "좌석 안내원", "image": "empty" },
-        { "name": "관객", "image": "empty" },
-        { "name": "물품 보관소 안내원", "image": "empty" },
-        { "name": "티켓 판매원", "image": "empty" },
-        { "name": "메이크업 아티스트", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
         "name": "대학교",
-        "image": "https://blog.kakaocdn.net/dn/bpF7W4/btqEep8awFQ/VtHiMGHmGhf1Y6jc3pirK1/img.jpg"
+        "image": ""
       },
       "roles": [
         { "name": "교수", "image": "empty" },
@@ -268,28 +171,8 @@
         { "name": "조교", "image": "empty" },
         { "name": "화석", "image": "empty" },
         { "name": "신입생", "image": "empty" },
-        { "name": "총장", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "중학교",
-        "image": "https://blog.kakaocdn.net/dn/bpF7W4/btqEep8awFQ/VtHiMGHmGhf1Y6jc3pirK1/img.jpg"
-      },
-      "roles": [
-        { "name": "교장 선생님", "image": "empty" },
-        { "name": "외국어 선생님", "image": "empty" },
-        { "name": "수학 선생님", "image": "empty" },
-        { "name": "국어 선생님", "image": "empty" },
-        { "name": "체육 선생님", "image": "empty" },
-        { "name": "중2병 학생", "image": "empty" },
-        { "name": "불량 학생", "image": "empty" },
-        { "name": "성실한 학생", "image": "empty" },
-        { "name": "급식 영양사", "image": "empty" },
-        { "name": "학부모", "image": "empty" },
-        { "name": "사서", "image": "empty" },
-        { "name": "학교 보안 요원", "image": "empty" },
-        { "name": "보건 선생님", "image": "empty" }
+        { "name": "총장", "image": "empty" },
+        { "name": "기숙사 사감", "image": "empty" }
       ]
     },
     {
@@ -302,48 +185,13 @@
         { "name": "타짜", "image": "empty" },
         { "name": "경비원", "image": "empty" },
         { "name": "도박 중독자", "image": "empty" },
-        { "name": "돈을 전부 잃은 사람", "image": "empty" },
+        { "name": "전부 잃은 사람", "image": "empty" },
         { "name": "카지노 매니저", "image": "empty" },
         { "name": "호구", "image": "empty" },
         { "name": "VIP 고객", "image": "empty" },
         { "name": "바텐더", "image": "empty" },
         { "name": "바람잡이", "image": "empty" },
-        { "name": "청소부", "image": "empty" },
         { "name": "환전소 직원", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "우주정거장",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "우주비행사", "image": "empty" },
-        { "name": "과학자", "image": "empty" },
-        { "name": "의료 담당자", "image": "empty" },
-        { "name": "외계인", "image": "empty" },
-        { "name": "통신 정비 담당자", "image": "empty" },
-        { "name": "우주 관광객", "image": "empty" },
-        { "name": "정비사", "image": "empty" },
-        { "name": "조종사", "image": "empty" },
-        { "name": "프로그래머", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "바닷가",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "라이프가드", "image": "empty" },
-        { "name": "관광객", "image": "empty" },
-        { "name": "상인", "image": "empty" },
-        { "name": "모래성 건설자", "image": "empty" },
-        { "name": "서퍼", "image": "empty" },
-        { "name": "낚시꾼", "image": "empty" },
-        { "name": "해녀", "image": "empty" },
-        { "name": "변태", "image": "empty" },
-        { "name": "아이스크림 판매원", "image": "empty" }
       ]
     },
     {
@@ -369,25 +217,6 @@
     },
     {
       "place": {
-        "name": "놀이공원",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "손님", "image": "empty" },
-        { "name": "놀이기구 운영자", "image": "empty" },
-        { "name": "노점상", "image": "empty" },
-        { "name": "커플 방문객(남)", "image": "empty" },
-        { "name": "커플 방문객(여)", "image": "empty" },
-        { "name": "안전 요원", "image": "empty" },
-        { "name": "마스코트", "image": "empty" },
-        { "name": "귀신 역할 알바생", "image": "empty" },
-        { "name": "푸드코트 직원", "image": "empty" },
-        { "name": "티켓 판매원", "image": "empty" },
-        { "name": "어린이", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
         "name": "호텔",
         "image": "empty"
       },
@@ -402,6 +231,332 @@
         { "name": "수영장 관리인", "image": "empty" },
         { "name": "벨보이", "image": "empty" },
         { "name": "주차장 관리 요원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "군대",
+        "image": ""
+      },
+      "roles": [
+        { "name": "이병", "image": "empty" },
+        { "name": "말년 병장", "image": "empty" },
+        { "name": "관심 병사", "image": "empty" },
+        { "name": "소대장", "image": "empty" },
+        { "name": "초병", "image": "empty" },
+        { "name": "면회객", "image": "empty" },
+        { "name": "행정 보급관", "image": "empty" },
+        { "name": "PX병", "image": "empty" },
+        { "name": "의무병", "image": "empty" },
+        { "name": "급양병", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "극장",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "감독", "image": "empty" },
+        { "name": "무대 설치 직원", "image": "empty" },
+        { "name": "유명 배우", "image": "empty" },
+        { "name": "악단 지휘자", "image": "empty" },
+        { "name": "좌석 안내원", "image": "empty" },
+        { "name": "관객", "image": "empty" },
+        { "name": "물품 보관소 안내원", "image": "empty" },
+        { "name": "티켓 판매원", "image": "empty" },
+        { "name": "메이크업 아티스트", "image": "empty" },
+        { "name": "프롬프터", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "우주정거장",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "우주비행사", "image": "empty" },
+        { "name": "과학자", "image": "empty" },
+        { "name": "의료 담당자", "image": "empty" },
+        { "name": "외계인", "image": "empty" },
+        { "name": "통신 정비 담당자", "image": "empty" },
+        { "name": "우주 관광객", "image": "empty" },
+        { "name": "정비사", "image": "empty" },
+        { "name": "조종사", "image": "empty" },
+        { "name": "프로그래머", "image": "empty" },
+        { "name": "휴머노이드 로봇", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "놀이공원",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "포토그래퍼", "image": "empty" },
+        { "name": "놀이기구 운영자", "image": "empty" },
+        { "name": "노점상", "image": "empty" },
+        { "name": "커플 방문객(남)", "image": "empty" },
+        { "name": "커플 방문객(여)", "image": "empty" },
+        { "name": "안전 요원", "image": "empty" },
+        { "name": "마스코트", "image": "empty" },
+        { "name": "퍼레이드 댄서", "image": "empty" },
+        { "name": "푸드코트 직원", "image": "empty" },
+        { "name": "티켓 판매원", "image": "empty" },
+        { "name": "어린이", "image": "empty" },
+        { "name": "미아 보호소 직원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "미술관",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "큐레이터", "image": "empty" },
+        { "name": "전시 해설가", "image": "empty" },
+        { "name": "경비원", "image": "empty" },
+        { "name": "보존 전문가", "image": "empty" },
+        { "name": "관람객", "image": "empty" },
+        { "name": "갤러리 매니저", "image": "empty" },
+        { "name": "어린이 관람객", "image": "empty" },
+        { "name": "사진 작가", "image": "empty" },
+        { "name": "기념품 판매원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "대형 마트",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "마트 매니저", "image": "empty" },
+        { "name": "계산원", "image": "empty" },
+        { "name": "소매치기", "image": "empty" },
+        { "name": "재고 관리인", "image": "empty" },
+        { "name": "고객", "image": "empty" },
+        { "name": "푸드코트 직원", "image": "empty" },
+        { "name": "주차 안내원", "image": "empty" },
+        { "name": "아이 돌보미", "image": "empty" },
+        { "name": "전자제품 판매원", "image": "empty" },
+        { "name": "식품 판매원", "image": "empty" },
+        { "name": "의류 판매원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "교회",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "목사", "image": "empty" },
+        { "name": "신부", "image": "empty" },
+        { "name": "성가대원", "image": "empty" },
+        { "name": "성가대 지휘자", "image": "empty" },
+        { "name": "교회 관리인", "image": "empty" },
+        { "name": "주일학교 교사", "image": "empty" },
+        { "name": "집사", "image": "empty" },
+        { "name": "신도", "image": "empty" },
+        { "name": "전도사", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "도심 공원",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "산책하는 주민", "image": "empty" },
+        { "name": "피크닉족", "image": "empty" },
+        { "name": "자전거 대여 직원", "image": "empty" },
+        { "name": "아이스크림 트럭 사장", "image": "empty" },
+        { "name": "공원 경비원", "image": "empty" },
+        { "name": "조깅하는 사람", "image": "empty" },
+        { "name": "사진 작가", "image": "empty" },
+        { "name": "애견인", "image": "empty" },
+        { "name": "환경 미화원", "image": "empty" },
+        { "name": "야외 운동 강사", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "법원",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "판사", "image": "empty" },
+        { "name": "검사", "image": "empty" },
+        { "name": "변호사", "image": "empty" },
+        { "name": "법원 서기", "image": "empty" },
+        { "name": "배심원", "image": "empty" },
+        { "name": "경위", "image": "empty" },
+        { "name": "피고", "image": "empty" },
+        { "name": "원고", "image": "empty" },
+        { "name": "증인", "image": "empty" },
+        { "name": "법률 상담가", "image": "empty" },
+        { "name": "기자", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "자동차 정비소",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "정비소 매니저", "image": "empty" },
+        { "name": "자동차 정비사", "image": "empty" },
+        { "name": "타이어 교체 전문가", "image": "empty" },
+        { "name": "엔진 전문가", "image": "empty" },
+        { "name": "도색 전문가", "image": "empty" },
+        { "name": "고객 응대 직원", "image": "empty" },
+        { "name": "부품 창고 관리자", "image": "empty" },
+        { "name": "차량 검사원", "image": "empty" },
+        { "name": "세차 전문가", "image": "empty" },
+        { "name": "정비 중인 차량 주인", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "회사",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "사장", "image": "empty" },
+        { "name": "비서", "image": "empty" },
+        { "name": "팀장", "image": "empty" },
+        { "name": "직원", "image": "empty" },
+        { "name": "IT 지원 담당", "image": "empty" },
+        { "name": "청소부", "image": "empty" },
+        { "name": "대표 이사", "image": "empty" },
+        { "name": "회계사", "image": "empty" },
+        { "name": "마케팅 팀원", "image": "empty" },
+        { "name": "인사 담당자", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "야외 캠핑장",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "캠핑장 관리인", "image": "empty" },
+        { "name": "캠프파이어 진행자", "image": "empty" },
+        { "name": "텐트 설치 도우미", "image": "empty" },
+        { "name": "등산객", "image": "empty" },
+        { "name": "숲 해설가", "image": "empty" },
+        { "name": "야생 동물 감시자", "image": "empty" },
+        { "name": "바비큐 요리사", "image": "empty" },
+        { "name": "낚시꾼", "image": "empty" },
+        { "name": "아웃도어 장비 대여 직원", "image": "empty" },
+        { "name": "응급 처치 요원", "image": "empty" }
+      ]
+    }
+  ],
+  "extend":
+  [
+    {
+      "place": {
+        "name": "십자군 군대",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "붙잡힌 사라센인", "image": "empty" },
+        { "name": "하인", "image": "empty" },
+        { "name": "수도승", "image": "empty" },
+        { "name": "궁수", "image": "empty" },
+        { "name": "대지주", "image": "empty" },
+        { "name": "주교", "image": "empty" },
+        { "name": "기사", "image": "empty" },
+        { "name": "시민", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "국밥집",
+        "image": ""
+      },
+      "roles": [
+        { "name": "주방장", "image": "empty" },
+        { "name": "주방 보조", "image": "empty" },
+        { "name": "알바생", "image": "empty" },
+        { "name": "배달원", "image": "empty" },
+        { "name": "회사원", "image": "empty" },
+        { "name": "대학생", "image": "empty" },
+        { "name": "포장 손님", "image": "empty" },
+        { "name": "술 취한 아저씨", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "휴게소",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "주유소 직원", "image": "empty" },
+        { "name": "음식점 직원", "image": "empty" },
+        { "name": "휴게소 관리 직원", "image": "empty" },
+        { "name": "트럭 운전수", "image": "empty" },
+        { "name": "여행객", "image": "empty" },
+        { "name": "폭주족", "image": "empty" },
+        { "name": "지역 관광 안내원", "image": "empty" },
+        { "name": "커피숍 바리스타", "image": "empty" },
+        { "name": "화장실 청소 직원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "남극기지",
+        "image": ""
+      },
+      "roles": [
+        { "name": "연구소장", "image": "empty" },
+        { "name": "연구원", "image": "empty" },
+        { "name": "탐험 대장", "image": "empty" },
+        { "name": "기상학자", "image": "empty" },
+        { "name": "설인", "image": "empty" },
+        { "name": "펭귄", "image": "empty" },
+        { "name": "의료 담당", "image": "empty" },
+        { "name": "통신원", "image": "empty" },
+        { "name": "실험체 관리원", "image": "empty" },
+        { "name": "남극곰", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "중학교",
+        "image": ""
+      },
+      "roles": [
+        { "name": "교장 선생님", "image": "empty" },
+        { "name": "외국어 선생님", "image": "empty" },
+        { "name": "수학 선생님", "image": "empty" },
+        { "name": "국어 선생님", "image": "empty" },
+        { "name": "체육 선생님", "image": "empty" },
+        { "name": "중2병 학생", "image": "empty" },
+        { "name": "불량 학생", "image": "empty" },
+        { "name": "성실한 학생", "image": "empty" },
+        { "name": "급식 영양사", "image": "empty" },
+        { "name": "학부모", "image": "empty" },
+        { "name": "사서", "image": "empty" },
+        { "name": "학교 보안 요원", "image": "empty" },
+        { "name": "보건 선생님", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "바닷가",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "라이프가드", "image": "empty" },
+        { "name": "관광객", "image": "empty" },
+        { "name": "상인", "image": "empty" },
+        { "name": "모래성 건설자", "image": "empty" },
+        { "name": "서퍼", "image": "empty" },
+        { "name": "낚시꾼", "image": "empty" },
+        { "name": "해녀", "image": "empty" },
+        { "name": "변태", "image": "empty" },
+        { "name": "아이스크림 판매원", "image": "empty" }
       ]
     },
     {
@@ -457,24 +612,6 @@
     },
     {
       "place": {
-        "name": "회사",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "사장", "image": "empty" },
-        { "name": "비서", "image": "empty" },
-        { "name": "팀장", "image": "empty" },
-        { "name": "직원", "image": "empty" },
-        { "name": "IT 지원 담당", "image": "empty" },
-        { "name": "청소부", "image": "empty" },
-        { "name": "대표 이사", "image": "empty" },
-        { "name": "회계사", "image": "empty" },
-        { "name": "마케팅 팀원", "image": "empty" },
-        { "name": "인사 담당자", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
         "name": "농장",
         "image": "empty"
       },
@@ -488,21 +625,6 @@
         { "name": "마켓 판매자", "image": "empty" },
         { "name": "운송 담당자", "image": "empty" },
         { "name": "농장 견학 가이드", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "대형 마트",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "마트 매니저", "image": "empty" },
-        { "name": "계산원", "image": "empty" },
-        { "name": "소매치기", "image": "empty" },
-        { "name": "재고 관리인", "image": "empty" },
-        { "name": "고객", "image": "empty" },
-        { "name": "푸드코트 직원", "image": "empty" },
-        { "name": "주차 안내원", "image": "empty" }
       ]
     },
     {
@@ -557,22 +679,6 @@
     },
     {
       "place": {
-        "name": "교회",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "목사", "image": "empty" },
-        { "name": "신부", "image": "empty" },
-        { "name": "성가대원", "image": "empty" },
-        { "name": "성가대 지휘자", "image": "empty" },
-        { "name": "교회 관리인", "image": "empty" },
-        { "name": "주일학교 교사", "image": "empty" },
-        { "name": "집사", "image": "empty" },
-        { "name": "신도", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
         "name": "절",
         "image": "empty"
       },
@@ -585,23 +691,6 @@
         { "name": "참배객", "image": "empty" },
         { "name": "자원봉사자", "image": "empty" },
         { "name": "절에 사는 개", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
-        "name": "미술관",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "큐레이터", "image": "empty" },
-        { "name": "전시 해설가", "image": "empty" },
-        { "name": "경비원", "image": "empty" },
-        { "name": "보존 전문가", "image": "empty" },
-        { "name": "관람객", "image": "empty" },
-        { "name": "갤러리 매니저", "image": "empty" },
-        { "name": "어린이 관람객", "image": "empty" },
-        { "name": "사진가", "image": "empty" },
-        { "name": "기념품 판매원", "image": "empty" }
       ]
     },
     {
@@ -654,22 +743,6 @@
     },
     {
       "place": {
-        "name": "해양 연구소",
-        "image": "empty"
-      },
-      "roles": [
-        { "name": "해양 생물학자", "image": "empty" },
-        { "name": "해양 지질학자", "image": "empty" },
-        { "name": "잠수부", "image": "empty" },
-        { "name": "기술 엔지니어", "image": "empty" },
-        { "name": "연구실 관리자", "image": "empty" },
-        { "name": "수질 분석가", "image": "empty" },
-        { "name": "데이터 분석가", "image": "empty" },
-        { "name": "탐사 보트 조종사", "image": "empty" }
-      ]
-    },
-    {
-      "place": {
         "name": "야구경기장",
         "image": "empty"
       },
@@ -700,6 +773,117 @@
         { "name": "인터넷 방송 BJ", "image": "empty" },
         { "name": "PC 수리기사", "image": "empty" }
       ]
+    },
+    {
+      "place": {
+        "name": "공항",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "파일럿", "image": "empty" },
+        { "name": "승무원", "image": "empty" },
+        { "name": "보안 검색 요원", "image": "empty" },
+        { "name": "항공 교통 관제사", "image": "empty" },
+        { "name": "수하물 처리 직원", "image": "empty" },
+        { "name": "입국 심사관", "image": "empty" },
+        { "name": "항공사 카운터 직원", "image": "empty" },
+        { "name": "환전소 직원", "image": "empty" },
+        { "name": "면세점 직원", "image": "empty" },
+        { "name": "여행객", "image": "empty" },
+        { "name": "여권 잃어버린 여행객", "image": "empty" },
+        { "name": "밀입국자", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "경마장",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "경주 기수", "image": "empty" },
+        { "name": "마주", "image": "empty" },
+        { "name": "조련사", "image": "empty" },
+        { "name": "경마장 아나운서", "image": "empty" },
+        { "name": "베팅 창구 직원", "image": "empty" },
+        { "name": "말 관리사", "image": "empty" },
+        { "name": "관람객", "image": "empty" },
+        { "name": "수의사", "image": "empty" },
+        { "name": "경마 해설자", "image": "empty" },
+        { "name": "경비원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "기차역",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "기관사", "image": "empty" },
+        { "name": "승무원", "image": "empty" },
+        { "name": "매표소 직원", "image": "empty" },
+        { "name": "역장", "image": "empty" },
+        { "name": "안내 방송 요원", "image": "empty" },
+        { "name": "경비원", "image": "empty" },
+        { "name": "기차 청소부", "image": "empty" },
+        { "name": "수화물 운반인", "image": "empty" },
+        { "name": "택시 기사", "image": "empty" },
+        { "name": "승객", "image": "empty" },
+        { "name": "상점 직원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "소방서",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "소방관", "image": "empty" },
+        { "name": "소방서장", "image": "empty" },
+        { "name": "구급대원", "image": "empty" },
+        { "name": "구조대원", "image": "empty" },
+        { "name": "소방차 운전사", "image": "empty" },
+        { "name": "방화복 정비사", "image": "empty" },
+        { "name": "교육 담당 소방관", "image": "empty" },
+        { "name": "응급상황 디스패처", "image": "empty" },
+        { "name": "소방 훈련 강사", "image": "empty" },
+        { "name": "행정 직원", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "아쿠아리움",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "해양생물학자", "image": "empty" },
+        { "name": "다이버", "image": "empty" },
+        { "name": "아쿠아리움 안내원", "image": "empty" },
+        { "name": "기념품 판매원", "image": "empty" },
+        { "name": "해설사", "image": "empty" },
+        { "name": "수조 청소부", "image": "empty" },
+        { "name": "조명 기술자", "image": "empty" },
+        { "name": "안전 요원", "image": "empty" },
+        { "name": "수질 검사원", "image": "empty" },
+        { "name": "마스코트", "image": "empty" }
+      ]
+    },
+    {
+      "place": {
+        "name": "보건소",
+        "image": "empty"
+      },
+      "roles": [
+        { "name": "보건소 의사", "image": "empty" },
+        { "name": "간호사", "image": "empty" },
+        { "name": "예방 접종 담당자", "image": "empty" },
+        { "name": "영양사", "image": "empty" },
+        { "name": "방문 시민", "image": "empty" },
+        { "name": "방역 담당자", "image": "empty" },
+        { "name": "물리치료사", "image": "empty" },
+        { "name": "정신건강 상담사", "image": "empty" },
+        { "name": "행정 직원", "image": "empty" }
+      ]
     }
   ]
+}
   

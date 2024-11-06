@@ -1,12 +1,12 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, Interaction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { GameUI } from "../../common/game_ui";
-import { SPYCHECK_OPTION } from "../spycheck_options";
-import { SpyCheckCore } from "../spycheck_core";
-import { Question } from "../spycheck_data";
+import { SPYCHECK_OPTION } from "../spyfall_options";
+import { SpyCheckCore } from "../spyfall_core";
+import { Question } from "../spyfall_data";
 import { cancelableSleep, sleep } from "../../../utils/utility";
 import { getLogger } from "../../../utils/logger";
 import { BGM_TYPE } from "../../../managers/bgm_manager";
-import { SpyCheckCycle } from "../spycheck_cycle";
+import { SpyCheckCycle } from "../spyfall_cycle";
 import { GameUser } from "../../common/game_user";
 const logger = getLogger('SpyCheckProcessRound');
 

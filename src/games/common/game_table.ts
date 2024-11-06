@@ -71,6 +71,8 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
         logger.error(`Failed to voice reconnect. guild_id: ${this.guild.id}`);
         
         destroyVoiceConnect(this.voice_connection);
+
+        this.sendMessage(`\`\`\`🔉 봇의 음성 연결이 끊겼어요. '/음성재연결' 명령어로 다시 데려올 수 있어요!\`\`\``);
       }
     });
 
@@ -94,6 +96,18 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
     this.voice_connection = voice_connection;
 
     return true;
+  }
+
+  reconnectVoice()
+  {
+    const game_session = this.getGameSession()
+    if(!game_session)
+    {
+      return;
+    }
+
+    this.createVoiceConnection();
+    this.voice_connection?.subscribe(game_session.getAudioPlayer());
   }
 
   sendUI(ui: GameUI)

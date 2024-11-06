@@ -4,10 +4,11 @@ import { GameTable } from "./game_table";
 import { GameCore } from "./game_core";
 import { GameUI } from "./game_ui";
 import { getLogger } from "../../utils/logger";
-import { generateUUID, getAbsolutePath } from "../../utils/utility";
+import { generateUUID, } from "../../utils/utility";
 import { BGM_TYPE } from "../../managers/bgm_manager";
 import { existsSync } from "fs";
 import { GameUser } from "./game_user";
+import { RESOURCE_CONFIG } from "../../config/resource_config";
 const logger = getLogger('GameSession');
 
 export class GameSession
@@ -181,7 +182,7 @@ export class GameSession
       return;
     }
 
-    const bgm_resource_path = getAbsolutePath(process.env.BGM_PATH); 
+    const bgm_resource_path = RESOURCE_CONFIG.BGM_PATH; 
     const bgm_file_path = bgm_resource_path + "/" + bgm_type;
 
     if(existsSync(bgm_file_path) === false)
@@ -208,6 +209,26 @@ export class GameSession
     }
 
     this.audio_player.stop();
+  }
+
+  pauseAudio(): void
+  {
+    if(!this.audio_player) 
+    {
+      return;
+    }
+
+    this.audio_player.pause();
+  }
+
+  unpauseAudio(): void
+  {
+    if(!this.audio_player) 
+    {
+      return;
+    }
+
+    this.audio_player.unpause();
   }
 
   relayInteraction(interaction: Interaction): void

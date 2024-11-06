@@ -1,6 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, EmbedBuilder, Message, SelectMenuBuilder } from "discord.js";
 import { GameSession } from "./game_session";
 import { BGM_TYPE } from "../../managers/bgm_manager";
+import { getLogger } from "../../utils/logger";
+const logger = getLogger('GameUI');
 
 export class GameUI
 {
@@ -11,44 +13,56 @@ export class GameUI
 
   private timer_id: NodeJS.Timeout | null = null;
   private timer_bgm_id: NodeJS.Timeout | null = null;
+  private timer_paused: boolean = false;
 
-  startTimer(game_session: GameSession, main_description: string, duration: number)
+  startTimer(game_session: GameSession, main_description: string, duration_sec: number)
   {
-    if(duration < 10000) //10초 미만은 지원하지 말자
+    if(duration_sec >= 10000) //아니 상식적으로 10000초 이상 타이머? 이건 그냥 sec 값을 ms로 잘못 넣은 듯
+    {
+      logger.warn(`durations sec ${duration_sec} is too large. is it milliseconds?`);
+      
+    }
+
+    if(duration_sec < 10) //10초 미만은 지원하지 말자
     {
       return;
     }
 
-    //진행 상황 bar, 10%마다 호출하자
-    const progress_max_percentage = 10;
-    const progress_bar_interval = duration / progress_max_percentage;
-    let progress_percentage = 0; //시작은 0부터
+    //진행 상황 bar
+    const progress_bar_max_length = 10;
+    let elapsed_time = 0; //시작은 0부터
          
     this.embed.setDescription(
-      `${main_description}\n🕛 **${this.getProgressBarString(progress_percentage, progress_max_percentage)}**`
+      `${main_description}\n🕛 **${this.getProgressBarString(elapsed_time/duration_sec, progress_bar_max_length)}**`
     );
     game_session.sendUI(this);
  
     this.timer_id = setInterval(() => 
     {
-      if(progress_percentage === progress_max_percentage)
+      if(elapsed_time >= duration_sec)
       {
         this.stopTimer();
         return;
       }
 
+      if(this.timer_paused) //타이머 일시 정지됨
+      {
+        return;
+      }
+
+      ++elapsed_time; //1초마다 +1
+
       this.embed.setDescription(
-        `${main_description}\n🕛 **${this.getProgressBarString(++progress_percentage, progress_max_percentage)}**`
+        `${main_description}\n🕛 **${this.getProgressBarString((elapsed_time/duration_sec), progress_bar_max_length)}**`
       );
       game_session.editUI(this);
 
-    }, progress_bar_interval);
+      if(duration_sec - elapsed_time === 10) //10초 남았다?
+      {
+        this.startCountdown(game_session);
+      }
 
-    this.timer_bgm_id = setTimeout(() =>  //10초 남으면 카운트다운
-    {
-      game_session.stopAudio();
-      game_session.playBGM(BGM_TYPE.COUNTDOWN_10);
-    }, duration - 10000);
+    }, 1000);
   }
 
   stopTimer()
@@ -64,13 +78,30 @@ export class GameUI
     }
   }
 
-  getProgressBarString(progress_percentage: number, progress_max_percentage: number)
+  pauseTimer()
   {
-    let progress_bar_string = '';
-    for(let i = 0; i < progress_max_percentage; i++)
-    {
-      progress_bar_string += i <= progress_percentage ? '⏩' : '⬜';
-    }
+    this.timer_paused = true;
+  }
+
+  unpauseTimer()
+  {
+    this.timer_paused = false;
+  }
+
+  getProgressBarString(progress_percentage: number, progress_bar_length: number) 
+  {
+    // 퍼센트에 따라 채워질 칸 수 계산
+    const filled_length = Math.round(Math.min(progress_percentage, 1) * progress_bar_length);
+
+    // 진행 바 생성
+    const progress_bar_string = '⏩'.repeat(filled_length) + '⬜'.repeat(progress_bar_length - filled_length);
     return progress_bar_string;
   }
+
+  private startCountdown(game_session: GameSession)
+  {
+    game_session.stopAudio();
+    game_session.playBGM(BGM_TYPE.COUNTDOWN_10);
+  }
+
 }

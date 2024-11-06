@@ -4,14 +4,18 @@ import { CycleType, GameCycle } from "./game_cycle";
 import { getLogger } from "../../utils/logger";
 import { GameOptions } from "./game_options";
 import { GameData } from "./game_data";
+import { GameInfo } from "./game_info";
 const logger = getLogger('GameCore');
 
 export abstract class GameCore
 {
-  protected game_id: string = 'GameCore';
-  protected game_name: string = 'GameCoreName';
-  protected min_players: number = 0;
-  protected max_players: number = 10;
+  protected game_id: string;
+  protected game_name: string;
+  protected min_players: number;
+  protected max_players: number;
+  protected game_simple_description: string;
+  protected game_description: string;
+  protected game_thumbnail: string;
   protected game_options: GameOptions = new GameOptions();
   protected game_data: GameData = new GameData();
 
@@ -23,9 +27,16 @@ export abstract class GameCore
   private game_session: GameSession = new GameSession();
   private expired: boolean = false;
 
-  constructor()
+  constructor(game_info: GameInfo)
   {
-
+    this.game_id = game_info.id;
+    this.game_name = game_info.name;
+    this.min_players = game_info.min_players;
+    this.max_players = game_info.max_players;
+    this.game_simple_description = game_info.simple_description;
+    this.game_description = game_info.description;
+    this.game_thumbnail = game_info.thumbnail;
+   
   }
 
   linkGameSession(game_session: GameSession)
@@ -145,6 +156,21 @@ export abstract class GameCore
   getGameName(): string
   {
     return this.game_name;
+  }
+
+  getGameSimpleDescription(): string
+  {
+    return this.game_simple_description;
+  }
+
+  getGameDescription(): string
+  {
+    return this.game_description;
+  }
+
+  getGameThumbnail(): string
+  {
+    return this.game_thumbnail;
   }
 
   getMinPlayers(): number

@@ -3,9 +3,10 @@ import { GameData } from "../common/game_data";
 import { GameUI } from "../common/game_ui";
 import * as fs from 'fs';
 import { getLogger } from "../../utils/logger";
-import { getAbsolutePath, getRandomElement, shuffleArray } from "../../utils/utility";
+import { getRandomElement, shuffleArray } from "../../utils/utility";
 import { ANSWER_SELECT_CHOICES, ANSWER_SELECT_MENU, ANSWER_TYPES } from "./answer_select_type";
 import { GameUser } from "../common/game_user";
+import { RESOURCE_CONFIG } from "../../config/resource_config";
 const logger = getLogger('SpyCheckData');
 
 export class Question
@@ -28,7 +29,7 @@ export class SpyCheckGameData extends GameData
   {
     const question_list =  Array<Question>();
 
-    const question_list_path = getAbsolutePath(process.env.SPYCHECK_QUESTION_LIST_PATH);
+    const question_list_path = RESOURCE_CONFIG.SPYCHECK_PATH + "question_list.json";
 
     if(fs.existsSync(question_list_path) === false)
     {

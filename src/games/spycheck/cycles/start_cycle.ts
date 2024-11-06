@@ -210,7 +210,7 @@ export class StartCycle extends SpyCheckCycle
       .setTitle('**📝 [ 질문 작성을 기다리는 중 ]**');
 
     this.getGameSession().playBGM(BGM_TYPE.GRAND_FATHER_11_MONTH);
-    spy_choosing_alert_ui.startTimer(this.getGameSession(), '모두에게 질문 작성 화면을 보냈어요.\n \n스파이를 찾아내기 위해 사용할 질문을 작성해주세요.\n', custom_question_time * 1000);
+    spy_choosing_alert_ui.startTimer(this.getGameSession(), '모두에게 질문 작성 화면을 보냈어요.\n \n스파이를 찾아내기 위해 사용할 질문을 작성해주세요.\n', custom_question_time);
 
     await sleep(custom_question_time * 1000);
     spy_choosing_alert_ui.stopTimer();
