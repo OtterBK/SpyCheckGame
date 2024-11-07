@@ -803,14 +803,14 @@
       "roles": [
         { "name": "경주 기수", "image": "empty" },
         { "name": "마주", "image": "empty" },
-        { "name": "조련사", "image": "empty" },
+        { "name": "도박 중독자", "image": "empty" },
         { "name": "경마장 아나운서", "image": "empty" },
         { "name": "베팅 창구 직원", "image": "empty" },
         { "name": "말 관리사", "image": "empty" },
         { "name": "관람객", "image": "empty" },
-        { "name": "수의사", "image": "empty" },
+        { "name": "경비원", "image": "empty" },
         { "name": "경마 해설자", "image": "empty" },
-        { "name": "경비원", "image": "empty" }
+        { "name": "경주마", "image": "empty" }
       ]
     },
     {
