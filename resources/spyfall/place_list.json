@@ -253,7 +253,7 @@
     },
     {
       "place": {
-        "name": "극장",
+        "name": "뮤지컬 극장",
         "image": "empty"
       },
       "roles": [
@@ -271,7 +271,7 @@
     },
     {
       "place": {
-        "name": "우주정거장",
+        "name": "우주 화성 기지",
         "image": "empty"
       },
       "roles": [
@@ -399,12 +399,12 @@
     },
     {
       "place": {
-        "name": "자동차 정비소",
+        "name": "차량 정비소",
         "image": "empty"
       },
       "roles": [
         { "name": "정비소 매니저", "image": "empty" },
-        { "name": "자동차 정비사", "image": "empty" },
+        { "name": "차량 정비사", "image": "empty" },
         { "name": "타이어 교체 전문가", "image": "empty" },
         { "name": "엔진 전문가", "image": "empty" },
         { "name": "도색 전문가", "image": "empty" },
