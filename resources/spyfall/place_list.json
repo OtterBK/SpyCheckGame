@@ -488,7 +488,7 @@
     },
     {
       "place": {
-        "name": "휴게소",
+        "name": "고속도로 휴게소",
         "image": "empty"
       },
       "roles": [
@@ -747,7 +747,8 @@
         "image": "empty"
       },
       "roles": [
-        { "name": "야구 선수", "image": "empty" },
+        { "name": "타자", "image": "empty" },
+        { "name": "투수", "image": "empty" },
         { "name": "코치", "image": "empty" },
         { "name": "심판", "image": "empty" },
         { "name": "응원단", "image": "empty" },
