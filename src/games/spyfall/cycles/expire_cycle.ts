@@ -1,14 +1,14 @@
 import { Interaction } from "discord.js";
-import { SpyCheckCore } from "../spyfall_core";
+import { SpyFallCore } from "../spyfall_core";
 import { getLogger } from "../../../utils/logger";
-import { SpyCheckCycle } from "../spyfall_cycle";
-const logger = getLogger('SpyCheckExpire');
+import { SpyFallCycle } from "../spyfall_cycle";
+const logger = getLogger('SpyFallExpire');
 
-export class ExpireCycle extends SpyCheckCycle
+export class ExpireCycle extends SpyFallCycle
 {
-  constructor(game_core: SpyCheckCore)
+  constructor(game_core: SpyFallCore)
   {
-    super(game_core, `SpyCheckExipre`);
+    super(game_core, `SpyFallExpire`);
   }
 
   async enter(): Promise<boolean>

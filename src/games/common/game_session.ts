@@ -252,6 +252,12 @@ export class GameSession
     }
   }
 
+  forceStop(reason: string)
+  {
+    logger.info(`Force stopping game session. host id: ${this.host?.id}. reason: ${reason}`);
+    this.expire();
+  }
+
   expire(): void
   {
     logger.info(`Expiring game session. host id: ${this.host?.id}`);
@@ -269,6 +275,7 @@ export class GameSession
     this.participants = [];
 
     this.game_core?.expire();
+    this.game_core?.getGameData().expire();
     this.game_core = null;
 
     GameSession.GAME_SESSIONS.delete(this.uuid);

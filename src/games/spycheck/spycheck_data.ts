@@ -21,6 +21,13 @@ export class Question
     }
 }
 
+export enum GAME_RESULT_TYPE
+{
+  SPY_WIN,
+  CIVILIAN_WIN,
+  CONTINUE,
+}
+
 export class SpyCheckGameData extends GameData
 {
   static EXPLICIT_QUESTION_LIST: Array<Question> = SpyCheckGameData.loadExplicitQuestionList();
@@ -56,7 +63,7 @@ export class SpyCheckGameData extends GameData
     this.data_map.set('QUESTION_LIST', Array<Question>());
     this.data_map.set('ANSWER_SELECT_MAP', new Map<string, string>());
     this.data_map.set('CURRENT_QUESTION', null);
-    this.data_map.set('GAME_RESULT', 'NULL');
+    this.data_map.set('GAME_RESULT', GAME_RESULT_TYPE.CONTINUE);
     this.data_map.set('SPY_LIST_STRING', '');
   }
 
@@ -134,20 +141,7 @@ export class SpyCheckGameData extends GameData
   {
     if(answer_type === 4 && users) //참가자 선택 방식
     {
-      const user_select_comp = new ActionRowBuilder<StringSelectMenuBuilder>()
-      .addComponents(
-        new StringSelectMenuBuilder()
-        .setCustomId('answer_select')
-        .setPlaceholder('답변 선택')
-        .addOptions(
-            users.map(user => 
-            {
-              return new StringSelectMenuOptionBuilder().setLabel(user.getDisplayName()).setValue(user.getDisplayName());
-            })
-        )
-      );
-
-      return user_select_comp;
+      return this.getUserSelectComponents('answer_select', '답변 선택');
     }
 
     const comp =  ANSWER_SELECT_MENU.get(answer_type) ?? null;
@@ -208,12 +202,12 @@ export class SpyCheckGameData extends GameData
     return this.data_map.get('CURRENT_QUESTION');
   }
 
-  setGameResult(result: string)
+  setGameResult(result: GAME_RESULT_TYPE)
   {
     this.data_map.set('GAME_RESULT', result);
   }
 
-  getGameResult(): string
+  getGameResult(): GAME_RESULT_TYPE
   {
     return this.data_map.get('GAME_RESULT');
   }

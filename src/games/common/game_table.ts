@@ -117,6 +117,7 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
       {
         embeds: [ui.embed],
         components: ui.components,
+        files: ui.files,
       }
     ).then((message: Message) => 
     {

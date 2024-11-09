@@ -7,6 +7,7 @@ import { GameOptions } from "./common/game_options";
 import { getLogger } from "../utils/logger";
 import { GameInfo } from "./common/game_info";
 import { GameUI } from "./common/game_ui";
+import { SpyFallCore } from "./spyfall/spyfall_core";
 const logger = getLogger('GameFactory')
 
 export function createGameCore(game_id: string): GameCore | null
@@ -21,6 +22,11 @@ export function createGameCore(game_id: string): GameCore | null
   if(game_id === 'SPYCHECK')
   {
     return new SpyCheckCore(game_info);
+  }
+  
+  if(game_id === 'SPYFALL')
+  {
+    return new SpyFallCore(game_info);
   }
 
   logger.error(`Cannot create game core. ${game_id}'s core constructor is not defined`);
@@ -122,6 +128,7 @@ function checkGameInfoSelectedInteraction(interaction: Interaction): boolean
   .setTitle(`🎮 **[ ${game_info.name} ]**`)
   .setDescription(`\n
     🔹 게임 인원: ${game_info.min_players} ~ ${game_info.max_players}명
+    🔹 게임 난이도: ${game_info.difficulty}
     🔹 간략한 게임 설명:\n\`\`\`${game_info.simple_description}\`\`\`
   `)
   .setImage(game_info.thumbnail);

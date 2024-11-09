@@ -11,6 +11,7 @@ export class GameInfo
     public name: string;
     public min_players: number;
     public max_players: number;
+    public difficulty: number;
     public very_simple_description: string;
     public simple_description: string;
     public description: string;
@@ -21,6 +22,7 @@ export class GameInfo
         name: string,
         min_players: number,
         max_players: number,
+        difficulty: number,
         very_simple_description: string,
         simple_description: string,
         description: string,
@@ -30,6 +32,7 @@ export class GameInfo
         this.name = name;
         this.min_players = min_players;
         this.max_players = max_players;
+        this.difficulty = difficulty;
         this.very_simple_description = very_simple_description;
         this.simple_description = simple_description;
         this.description = description;
@@ -51,6 +54,7 @@ function loadGameInfoMap(): Map<string, GameInfo>
                 game.name,
                 game.min_players,
                 game.max_players,
+                game.difficulty,
                 game.very_simple_description,
                 game.simple_description,
                 game.description,

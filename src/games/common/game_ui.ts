@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, EmbedBuilder, Message, SelectMenuBuilder } from "discord.js";
+import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, EmbedBuilder, Message, SelectMenuBuilder } from "discord.js";
 import { GameSession } from "./game_session";
 import { BGM_TYPE } from "../../managers/bgm_manager";
 import { getLogger } from "../../utils/logger";
@@ -8,6 +8,7 @@ export class GameUI
 {
   public embed: EmbedBuilder = new EmbedBuilder();
   public components: Array<ActionRowBuilder<ButtonBuilder | SelectMenuBuilder>> = [];
+  public files: Array<AttachmentBuilder> = [];
 
   public base_message: Message | null = null;
 

@@ -136,17 +136,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
     .setTitle('📩 **[ 투표 ]**')
     .setFooter({text: '투표는 익명으로 진행돼요.'});
 
-    const vote_component = new ActionRowBuilder<StringSelectMenuBuilder>()
-    .addComponents(
-      new StringSelectMenuBuilder()
-      .setCustomId('vote')
-      .setPlaceholder(`의심스러운 플레이어 지목하기`)
-      .addOptions(
-        this.getGameData().getInGameUsers().map(user => {
-          return new StringSelectMenuOptionBuilder().setLabel(user.getDisplayName()).setValue(user.getId())
-        })
-      )
-    )
+    const vote_component = this.getGameData().getUserSelectComponents('vote', `의심스러운 플레이어 지목하기`);
 
     const vote_skip_component = new ActionRowBuilder<ButtonBuilder>()
     .addComponents(
@@ -179,36 +169,28 @@ export class ProcessRoundCycle extends SpyCheckCycle
     .setDescription(`🔹 투표 결과:\n`)
 
     let most_voted_users: Array<GameUser> = [];
-    let most_voted_count = 0;
-    for(const game_user of this.getGameData().getInGameUsers())
+    for(const [voted_count, voted_users] of this.getGameData().makeVotedCountMap())
     {
-      const voted_count = this.getGameData().getVotedCount(game_user);
       if(voted_count === 0)
       {
         continue;
       }
 
-      if(voted_count >= most_voted_count)
+      if(most_voted_users.length === 0)
       {
-        if(voted_count === most_voted_count)
-        {
-          most_voted_users.push(game_user);
-        }
-        else //중복 아냐?
-        {
-          most_voted_users = [ game_user ]; //그럼 1명만으로 다시 등록
-        }
-
-        most_voted_count = voted_count;
+        most_voted_users = voted_users;
       }
 
-      vote_show_ui.embed.addFields(
-        {
-          name: game_user.getDisplayName(),
-          value: `${voted_count}표`,
-          inline: false,
-        },
-      )
+      for(const voted_user of voted_users)
+      {
+        vote_show_ui.embed.addFields(
+          {
+            name: voted_user.getDisplayName(),
+            value: `${voted_count}표`,
+            inline: false,
+          },
+        )
+      }
     }
 
     this.getGameSession().sendUI(vote_show_ui);
@@ -296,7 +278,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       const selected_value = interaction.values[0];
       const select_map_size = this.getGameData().addUserAnswerSelect(game_user, selected_value);
 
-      if(select_map_size === this.getGameData().getInGameUsers().length
+      if(select_map_size === this.getGameData().getInGameUserCount()
         && this.answer_timer_canceler) //모두 선택했으면 바로 skip
       {
         this.answer_timer_canceler(); //타이머 중지
@@ -319,7 +301,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       const selected_value = (interaction.isStringSelectMenu() && interaction.customId === 'vote') ? interaction.values[0] : '무투표';
       const select_map_size = this.getGameData().addUserVoted(game_user, selected_value);
 
-      if(select_map_size === this.getGameData().getInGameUsers().length
+      if(select_map_size === this.getGameData().getInGameUserCount()
         && this.vote_timer_canceler) //모두 선택했으면 바로 skip
       {
         this.vote_timer_canceler(); //타이머 중지

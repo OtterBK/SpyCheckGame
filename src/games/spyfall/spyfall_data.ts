@@ -1,18 +1,24 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, User } from "discord.js";
 import { GameData } from "../common/game_data";
-import { GameUI } from "../common/game_ui";
 import * as fs from 'fs';
 import { getLogger } from "../../utils/logger";
 import { getRandomElement, shuffleArray } from "../../utils/utility";
 import { GameUser } from "../common/game_user";
 import { cloneDeep } from "lodash";
 import { RESOURCE_CONFIG } from "../../config/resource_config";
+import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 const logger = getLogger('SpyFallData');
 
 enum PLACE_TYPE
 {
   NORMAL,
   EXTEND
+}
+
+export enum GAME_RESULT_TYPE
+{
+  SPY_WIN,
+  CIVILIAN_WIN,
+  CONTINUE,
 }
 
 export class Place
@@ -33,6 +39,16 @@ export class Place
   addRole(role: Role)
   {
     this.roles.push(role);
+  }
+
+  shuffleRoles()
+  {
+    shuffleArray(this.roles);
+  }
+
+  getRandomRole()
+  {
+    return this.roles.pop();
   }
 
   getName()
@@ -81,6 +97,7 @@ export class Role
 export class SpyFallGameData extends GameData
 {
   static PLACE_LIST_MAP: Map<PLACE_TYPE, Array<Place>> = SpyFallGameData.loadPlaceList();
+  static PLACE_SELECT_COMPONENTS: Array<ActionRowBuilder<StringSelectMenuBuilder>> = SpyFallGameData.buildPlaceSelectComponents();
 
   static loadPlaceList(): Map<PLACE_TYPE, Array<Place>>
   {
@@ -97,8 +114,8 @@ export class SpyFallGameData extends GameData
     const data = fs.readFileSync(place_list_path, 'utf-8'); // 파일을 읽어와 문자열로 저장
     const json = JSON.parse(data);
     
-    const normal_place_list = this.parsePlaceList(json.get('normal'), PLACE_TYPE.NORMAL);
-    const extend_place_list = this.parsePlaceList(json.get('extend'), PLACE_TYPE.EXTEND);
+    const normal_place_list = this.parsePlaceList(json.normal, PLACE_TYPE.NORMAL);
+    const extend_place_list = this.parsePlaceList(json.extend, PLACE_TYPE.EXTEND);
 
     place_list_map.set(PLACE_TYPE.NORMAL, normal_place_list);
     place_list_map.set(PLACE_TYPE.EXTEND, extend_place_list);
@@ -106,24 +123,56 @@ export class SpyFallGameData extends GameData
     return place_list_map;
   }
 
+  static buildPlaceSelectComponents(): Array<ActionRowBuilder<StringSelectMenuBuilder>> 
+  {
+    const components: Array<ActionRowBuilder<StringSelectMenuBuilder>> = [];
+
+    let current_select_menu: StringSelectMenuBuilder | null = null;
+    let menu_num = 0;
+    let place_num = 0;
+    for(const place of Array.from(SpyFallGameData.PLACE_LIST_MAP.values()).flat())
+    {
+      if(place_num++ % 25 === 0)
+      {
+        current_select_menu = new StringSelectMenuBuilder()
+        .setCustomId(`guess_place#${menu_num}`)
+        .setPlaceholder('의심되는 장소 선택');
+        
+        components.push(
+          new ActionRowBuilder<StringSelectMenuBuilder>()
+         .addComponents(current_select_menu)
+        );
+      }
+    
+      current_select_menu!
+      .addOptions(
+        new StringSelectMenuOptionBuilder()
+        .setEmoji('🔸')
+        .setLabel(place.getName())
+        .setValue(place.getName())
+      );
+    }
+
+    return components;
+  }
+
   static parsePlaceList(json_arr: Array<any>, place_type: PLACE_TYPE): Array<Place>
   {
     const place_list: Array<Place> = [];
 
     json_arr.forEach((item: { 
-      name: string; 
-      thumbnail: string; 
+      place: any; 
       roles: Array<any>; 
     }) => 
     {
-      const place = new Place(item.name, item.thumbnail, place_type);
+      const place = new Place(item.place.name, item.place.image, place_type);
 
       item.roles.forEach((role_item: {
         name: string; 
-        thumbnail: string;
+        image: string;
       }) =>
       {
-        const role = new Role(role_item.name, role_item.thumbnail);
+        const role = new Role(role_item.name, role_item.image);
         place.addRole(role);
       });
 
@@ -142,6 +191,7 @@ export class SpyFallGameData extends GameData
     this.data_map.set('CURRENT_PLACE', null);
     this.data_map.set('ROLE_MAP', 'NULL');
     this.data_map.set('SPY_LIST_STRING', '');
+    this.data_map.set('GAME_RESULT', GAME_RESULT_TYPE.CONTINUE);
   }
 
   addSpy(game_user: GameUser): void
@@ -157,6 +207,20 @@ export class SpyFallGameData extends GameData
     return this.data_map.get('SPY_LIST').includes(game_user.getId());
   }
 
+  getSpyRemainedCount(): number
+  {
+    let spy_remained_count = 0;
+    for(const game_user of this.getInGameUsers())    
+    {
+      if(this.isSpy(game_user))
+      {
+        ++spy_remained_count;
+      }
+    }
+
+    return spy_remained_count;
+  }
+
   getRandomPlace(is_extend_mode: boolean): Place
   {
     if(is_extend_mode) //확장모드?
@@ -167,46 +231,12 @@ export class SpyFallGameData extends GameData
     return getRandomElement(Array.from(SpyFallGameData.PLACE_LIST_MAP.get(PLACE_TYPE.NORMAL) ?? [])).copy();
   }
 
-  addUserVoted(game_user: GameUser, value: string): number
-  {
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    map.set(game_user.getId(), value);
-
-    return map.size;
-  }
-
-  clearVoteMap()
-  {
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    map.clear();
-  }
-
-  getVoteMap(): Map<string, string>
-  {
-    return this.data_map.get('VOTE_MAP');
-  }
-
-  getVotedCount(game_user: GameUser): number
-  {
-    let voted_count = 0;
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    for(const value of map.values())
-    {
-      if(value === game_user.getId())
-      {
-        ++voted_count;
-      }
-    }
-
-    return voted_count;
-  }
-
   setCurrentPlace(place: Place)
   {
     this.data_map.set('CURRENT_PLACE', place);
   }
 
-  getCurrentPlace()
+  getCurrentPlace(): Place
   {
     return this.data_map.get('CURRENT_PLACE');
   }
@@ -215,4 +245,26 @@ export class SpyFallGameData extends GameData
   {
     return this.data_map.get('SPY_LIST_STRING');
   }
+
+  setRole(game_user: GameUser, role: Role)
+  {
+    const role_map = this.data_map.get('ROLE_MAP').includes(game_user.getId());
+    role_map.set()
+  }
+
+  getRole(game_user: GameUser): Role | null
+  {
+    return this.data_map.get('ROLE_MAP').includes(game_user.getId()) ?? null;
+  }
+
+  setGameResult(result: GAME_RESULT_TYPE)
+  {
+    this.data_map.set('GAME_RESULT', result);
+  }
+
+  getGameResult(): GAME_RESULT_TYPE
+  {
+    return this.data_map.get('GAME_RESULT');
+  }
+
 }

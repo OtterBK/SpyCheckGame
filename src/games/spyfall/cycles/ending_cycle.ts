@@ -1,17 +1,18 @@
 import { Interaction } from "discord.js";
 import { GameUI } from "../../common/game_ui";
-import { SpyCheckCore } from "../spyfall_core";
+import { SpyFallCore } from "../spyfall_core";
 import { sleep } from "../../../utils/utility";
 import { getLogger } from "../../../utils/logger";
 import { BGM_TYPE } from "../../../managers/bgm_manager";
-import { SpyCheckCycle } from "../spyfall_cycle";
-const logger = getLogger('SpyCheckEnding');
+import { SpyFallCycle } from "../spyfall_cycle";
+import { GAME_RESULT_TYPE } from "../spyfall_data";
+const logger = getLogger('SpyFallEnding');
 
-export class EndingCycle extends SpyCheckCycle
+export class EndingCycle extends SpyFallCycle
 {
-  constructor(game_core: SpyCheckCore)
+  constructor(game_core: SpyFallCore)
   {
-    super(game_core, `SpyCheckEnding`);
+    super(game_core, `SpyFallEnding`);
   }
 
   async enter(): Promise<boolean>
@@ -21,23 +22,26 @@ export class EndingCycle extends SpyCheckCycle
   async act(): Promise<boolean> 
   {
     const game_result = this.getGameData().getGameResult();
-    if(game_result === 'NULL')
+    if(game_result === GAME_RESULT_TYPE.CONTINUE)
     {
       logger.error("No Game Result in ending cycle")
       return false;
     }
 
-    const spy_win = game_result === 'SPY_WIN' ? true : false;
-
-    const spy_list = this.getGameData().getSpyListString();
+    let role_list = ``;
+    for(const game_user of this.getGameSession().getParticipants())
+    {
+      const role_map = this.getGameData().getRole(game_user);
+      role_list += `${game_user.getDisplayName()} => ${role_map}`;
+    }
 
     const ending_ui = new GameUI();
     ending_ui.embed
     .setColor(0x009900)
     .setTitle('결과')
-    .setDescription(`스파이 명단:\n${spy_list}`)
+    .setDescription(`역할 명단:\n${role_list}`)
 
-    if(spy_win)
+    if(game_result === GAME_RESULT_TYPE.SPY_WIN)
     {
       ending_ui.embed
       .setTitle('🐱‍👤 **[ 스파이팀 승리! ]**')

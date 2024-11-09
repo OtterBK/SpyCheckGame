@@ -1,14 +1,14 @@
 import { Interaction } from "discord.js";
-import { SpyCheckCore } from "../spyfall_core";
+import { SpyFallCore } from "../spyfall_core";
 import { getLogger } from "../../../utils/logger";
-import { SpyCheckCycle } from "../spyfall_cycle";
-const logger = getLogger('SpyCheckPrepareRound');
+import { SpyFallCycle } from "../spyfall_cycle";
+const logger = getLogger('SpyFallPrepareRound');
 
-export class PrepareRoundCycle extends SpyCheckCycle
+export class PrepareRoundCycle extends SpyFallCycle
 {
-  constructor(game_core: SpyCheckCore)
+  constructor(game_core: SpyFallCore)
   {
-    super(game_core, `SpyCheckPrepareRound`);
+    super(game_core, `SpyFallPrepareRound`);
   }
 
   async enter(): Promise<boolean>
@@ -18,19 +18,6 @@ export class PrepareRoundCycle extends SpyCheckCycle
 
   async act(): Promise<boolean> 
   {
-    this.getGameData().clearAnswerSelectMap();
-    this.getGameData().clearVoteMap();
-
-    const current_question = this.getGameData().popQuestion();
-    if(current_question)
-    {
-      this.getGameData().setCurrentQuestion(current_question);
-    }
-    else
-    {
-      logger.error('current question is null. maybe question list is empty') ;
-    }
-
     return true;
   }
 

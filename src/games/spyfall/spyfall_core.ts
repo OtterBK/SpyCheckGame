@@ -31,7 +31,7 @@ export class SpyFallCore extends GameCore
       return;
     }
     
-    logger.error(`start ${this.game_id} from game core`);
+    logger.info(`start ${this.game_id} from game core`);
 
     this.initializeGameOptions();
     this.initializeCycle(); //initialize chain
@@ -77,17 +77,17 @@ export class SpyFallCore extends GameCore
 
     this.game_options.addOption(
       new GameOption('토론 시간', SPYFALL_OPTION.SPY_GUESS_TIME, '스파이가 누구인지 추측할 토론 시간을 설정합니다.')
-        .addChoice(new OptionChoice('30초', '300', '스파이 색출을 위한 토론 시간을 5분 제공합니다.'))
-        .addChoice(new OptionChoice('40초', '360', '스파이 색출을 위한 토론 시간을 6분 제공합니다.'))
-        .addChoice(new OptionChoice('50초', '420', '스파이 색출을 위한 토론 시간을 7분 제공합니다.'))
-        .addChoice(new OptionChoice('60초', '480', '스파이 색출을 위한 토론 시간을 8분 제공합니다.'))
-        .addChoice(new OptionChoice('70초', '540', '스파이 색출을 위한 토론 시간을 9분 제공합니다.'))
-        .addChoice(new OptionChoice('80초', '600', '스파이 색출을 위한 토론 시간을 10분 제공합니다.'))
-        .addChoice(new OptionChoice('90초', '660', '스파이 색출을 위한 토론 시간을 11분 제공합니다.'))
-        .addChoice(new OptionChoice('100초', '720', '스파이 색출을 위한 토론 시간을 12분 제공합니다.'))
-        .addChoice(new OptionChoice('110초', '780', '스파이 색출을 위한 토론 시간을 13분 제공합니다.'))
-        .addChoice(new OptionChoice('120초', '840', '스파이 색출을 위한 토론 시간을 14분 제공합니다.'))
-        .addChoice(new OptionChoice('120초', '900', '스파이 색출을 위한 토론 시간을 15분 제공합니다.'))
+        .addChoice(new OptionChoice('5분', '300', '스파이 색출을 위한 토론 시간을 5분 제공합니다.'))
+        .addChoice(new OptionChoice('6분', '360', '스파이 색출을 위한 토론 시간을 6분 제공합니다.'))
+        .addChoice(new OptionChoice('7분', '420', '스파이 색출을 위한 토론 시간을 7분 제공합니다.'))
+        .addChoice(new OptionChoice('8분', '480', '스파이 색출을 위한 토론 시간을 8분 제공합니다.'))
+        .addChoice(new OptionChoice('9분', '540', '스파이 색출을 위한 토론 시간을 9분 제공합니다.'))
+        .addChoice(new OptionChoice('10분', '600', '스파이 색출을 위한 토론 시간을 10분 제공합니다.'))
+        .addChoice(new OptionChoice('11분', '660', '스파이 색출을 위한 토론 시간을 11분 제공합니다.'))
+        .addChoice(new OptionChoice('12분', '720', '스파이 색출을 위한 토론 시간을 12분 제공합니다.'))
+        .addChoice(new OptionChoice('13분', '780', '스파이 색출을 위한 토론 시간을 13분 제공합니다.'))
+        .addChoice(new OptionChoice('14분', '840', '스파이 색출을 위한 토론 시간을 14분 제공합니다.'))
+        .addChoice(new OptionChoice('15분', '900', '스파이 색출을 위한 토론 시간을 15분 제공합니다.'))
         .selectChoice('600')
     );
 

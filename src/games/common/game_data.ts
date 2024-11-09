@@ -1,3 +1,4 @@
+import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { GameUser } from "./game_user";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -26,6 +27,11 @@ export class GameData
   getInGameUsers(): Array<GameUser>
   {
     return this.data_map.get('INGAME_USERS');
+  }
+
+  getInGameUserCount(): number
+  {
+    return this.data_map.get('INGAME_USERS').length;
   }
 
   isInGameUser(user_id: string): boolean
@@ -108,9 +114,15 @@ export class GameData
     voted_count_map?.clear();
   }
 
+  getVoteMap(): Map<string, string>
+  {
+    const vote_map: Map<string, string> = this.data_map.get('VOTE_MAP');
+    return vote_map;
+  }
+
   makeVotedCountMap() // 투표 개봉
   {
-    const voted_count_map: Map<Number, Array<GameUser>> = this.data_map.get('VOTED_COUNT_MAP');
+    const voted_count_map: Map<number, Array<GameUser>> = this.data_map.get('VOTED_COUNT_MAP');
     for(const game_user of this.getInGameUsers())
     {
       const voted_count = this.getVotedCount(game_user);
@@ -124,6 +136,15 @@ export class GameData
         voted_count_map.set(voted_count, [ game_user ]);
       }
     }
+
+    // voted_count_map의 키를 내림차순으로 정렬
+    const sorted_map = new Map(
+      [...voted_count_map.entries()].sort((a, b) => b[0] - a[0])
+    );
+
+    this.data_map.set('VOTED_COUNT_MAP', sorted_map);
+
+    return sorted_map;
   }  
 
   getVotedCount(game_user: GameUser): number
@@ -139,5 +160,28 @@ export class GameData
     }
 
     return voted_count;
+  }
+
+  getVotedCountMap(): Map<number, Array<GameUser>>
+  {
+    return this.data_map.get('VOTED_COUNT_MAP');
+  }
+
+  getUserSelectComponents(id: string, placeholder: string = '의심스러운 플레이어 지목하기')
+  {
+    const user_select_comp = new ActionRowBuilder<StringSelectMenuBuilder>()
+    .addComponents(
+      new StringSelectMenuBuilder()
+      .setCustomId(id)
+      .setPlaceholder(placeholder)
+      .addOptions(
+          this.getInGameUsers().map(game_user => 
+          {
+            return new StringSelectMenuOptionBuilder().setLabel(game_user.getDisplayName()).setValue(game_user.getDisplayName());
+          })
+      )
+    );
+
+    return user_select_comp;
   }
 }
