@@ -1,4 +1,4 @@
-import { Guild, GuildMember, Interaction, TextChannel, VoiceChannel, RepliableInteraction } from "discord.js";
+import { Guild, GuildMember, Interaction, TextChannel, VoiceChannel, RepliableInteraction, ActionRowBuilder, SelectMenuBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, StringSelectMenuInteraction, ButtonBuilder, ButtonStyle } from "discord.js";
 import { GameSession } from "./common/game_session";
 import { GameCore } from "./common/game_core";
 import { SpyCheckCore } from "./spycheck/spycheck_core";
@@ -6,6 +6,7 @@ import { GameTable } from "./common/game_table";
 import { GameOptions } from "./common/game_options";
 import { getLogger } from "../utils/logger";
 import { GameInfo } from "./common/game_info";
+import { GameUI } from "./common/game_ui";
 const logger = getLogger('GameFactory')
 
 export function createGameCore(game_id: string): GameCore | null
@@ -27,9 +28,55 @@ export function createGameCore(game_id: string): GameCore | null
   return null;
 }
 
+const game_select_menu: GameUI = new GameUI();
+
+let game_num = 0;
+let menu_num = 0;
+let current_select_menu: StringSelectMenuBuilder | null = null;
+for(const [game_id, game_info] of GameInfo.GAME_INFO_MAP)
+{
+  if(game_num++ % 25 === 0)
+  {
+    current_select_menu = new StringSelectMenuBuilder()
+    .setCustomId(`game_menu_selected#${menu_num}`)
+    .setPlaceholder('게임 선택');
+    
+    game_select_menu.components.push(
+      new ActionRowBuilder<StringSelectMenuBuilder>()
+     .addComponents(current_select_menu)
+    );
+  }
+
+  current_select_menu!
+  .addOptions(
+    new StringSelectMenuOptionBuilder()
+    .setEmoji('🎮')
+    .setLabel(game_info.name)
+    .setValue(game_id)
+    .setDescription(game_info.very_simple_description)
+  );
+}
+
+game_select_menu.embed
+.setColor(0x3B1C32)
+.setTitle('🎮 **[ 게임 선택 ] **')
+.setDescription(`
+  🔹 현재 등록된 게임: **${game_num}개**
+  🔹 아래 메뉴에서 플레이할 게임을 선택해주세요!
+  `)
+.setFooter({ text: '💬 문의: 제육보끔#1916' })
+.setImage('https://cdn.discordapp.com/avatars/952896575145930773/da87b1cd67c0842014847683282bb162?size=1024') //심플하게 가자고~
+
+
 export function createGameSelectMenu(interaction: RepliableInteraction)
 {
-    return null;
+  interaction.reply(
+    {
+      embeds: [ game_select_menu.embed ],
+      components: game_select_menu.components
+    }
+  );
+  return null;
 }
 
 export function createGameSession( member: GuildMember): GameSession
@@ -52,8 +99,102 @@ export function getGameSessionByUser(user_id: string): GameSession | null
   return null;
 }
 
+
+function checkGameInfoSelectedInteraction(interaction: Interaction): boolean
+{
+  if(!interaction.isStringSelectMenu() || interaction.customId.startsWith('game_menu_selected') === false)
+  {
+    return false;
+  }
+
+  const game_id = interaction.values[0];
+  const game_info = GameInfo.GAME_INFO_MAP.get(game_id);
+  if(!game_info)
+  {
+    logger.error(`Cannot create game core. ${game_id}'s game info is not exist`);
+    interaction.reply({ content: `\`\`\`🔸 ${game_id} 게임을 찾을 수 없어요... 이게 왜 이러지...\`\`\``, ephemeral: true });
+    return false;
+  }
+
+  const game_info_ui = new GameUI();
+  game_info_ui.embed
+  .setColor(0x3B1C32)
+  .setTitle(`🎮 **[ ${game_info.name} ]**`)
+  .setDescription(`\n
+    🔹 게임 인원: ${game_info.min_players} ~ ${game_info.max_players}명
+    🔹 간략한 게임 설명:\n\`\`\`${game_info.simple_description}\`\`\`
+  `)
+  .setImage(game_info.thumbnail);
+
+  game_info_ui.components.push(
+    new ActionRowBuilder<ButtonBuilder>()
+   .addComponents(
+      new ButtonBuilder()
+      .setCustomId(`game_selected#${game_info.id}`)
+      .setLabel(`시작`)
+      .setStyle(ButtonStyle.Success),
+
+      new ButtonBuilder()
+      .setCustomId(`game_menu_back`)
+      .setLabel(`뒤로가기`)
+      .setStyle(ButtonStyle.Secondary),
+   )
+  );
+
+  interaction.message.edit(
+    {
+      embeds: [ game_info_ui.embed ],
+      components: game_info_ui.components
+    }
+  );
+
+  interaction.deferUpdate();
+  
+  return true;
+}
+
+function checkGameInfoControlInteraction(interaction: Interaction)
+{
+  if(!interaction.isButton())
+  {
+    return false;
+  }
+
+  if(interaction.customId === 'game_menu_back')
+  {
+    interaction.message.edit(
+      {
+        embeds: [ game_select_menu.embed ],
+        components: game_select_menu.components
+      }
+    );
+
+    interaction.deferUpdate();
+    return true;
+  }
+
+  if(interaction.customId.startsWith('game_selected'))
+  {
+    const game_id = interaction.customId.split('#')[1];
+    createGameLobby(interaction, game_id);
+    return true;
+  }
+
+  return false;
+}
+
 export function relayInteraction(interaction: Interaction): boolean
 {
+  if(checkGameInfoSelectedInteraction(interaction))
+  {
+    return true;
+  }
+
+  if(checkGameInfoControlInteraction(interaction))
+  {
+    return true;
+  }
+
   const guild = interaction.guild;
   if(guild)
   {
@@ -154,7 +295,7 @@ export function createGameLobby(interaction: RepliableInteraction, game_id: stri
   const prev_game_table = getGameTable(guild.id);
   if(prev_game_table)
   {
-    interaction.reply({ content: `\`\`\`🔸 이미 이 서버에서 ${prev_game_table.getGameSession()?.getGameName()} 게임을 진행 중이에요.\n🔸 뭔가 문제가 생기신거라면 '/게임정리' 명령어를 사용해보세요.\`\`\``, ephemeral:true });
+    interaction.reply({ content: `\`\`\`🔸 이미 이 서버에서 ${prev_game_table.getGameSession()?.getGameName()} 게임을 진행 중이에요.\n🔸 뭔가 문제가 생기신거라면 '/강제종료' 명령어를 사용해보세요.\`\`\``, ephemeral:true });
     return;
   }
 

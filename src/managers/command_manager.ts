@@ -23,7 +23,7 @@ const commands = [
     ),
 
   new SlashCommandBuilder()
-    .setName('게임정리')
+    .setName('강제종료')
     .setDescription('게임 세션을 강제 정리합니다.'),
 
     new SlashCommandBuilder()
@@ -102,7 +102,7 @@ command_handlers.set('보드게임', (interaction: ChatInputCommandInteraction) 
   createGameLobby(interaction, game_id);
 });
 
-command_handlers.set('게임정리', (interaction: ChatInputCommandInteraction) =>
+command_handlers.set('강제종료', (interaction: ChatInputCommandInteraction) =>
 {
   const guild = interaction.guild;
   const member = interaction.member as GuildMember;
@@ -123,7 +123,7 @@ command_handlers.set('게임정리', (interaction: ChatInputCommandInteraction) 
   table.getGameSession()?.expire();
   table.expire();
 
-  interaction.reply({ content: `\`\`\`🔸 ${member.displayName}님이 세션을 강제 정리했어요.\`\`\``, });
+  interaction.reply({ content: `\`\`\`🔸 ${member.displayName}님이 게임을 강제 종료했어요.\`\`\``, });
   return;
 }
 );

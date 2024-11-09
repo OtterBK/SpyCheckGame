@@ -10,6 +10,13 @@ import { SpyCheckCycle } from "../spycheck_cycle";
 import { GameUser } from "../../common/game_user";
 const logger = getLogger('SpyCheckProcessRound');
 
+enum ROUND_STEP
+{
+  ANSWER,
+  VOTE,
+  VOTE_RESULT
+}
+
 export class ProcessRoundCycle extends SpyCheckCycle
 {
   private current_question: Question | null = null;
@@ -18,7 +25,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
   private round_num: number = 0;
 
-  private step = 0;
+  private step: ROUND_STEP = ROUND_STEP.ANSWER;
 
   constructor(game_core: SpyCheckCore)
   {
@@ -28,7 +35,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
   async enter(): Promise<boolean>
   {
     this.current_question = null;
-    this.step = 0;
+    this.step = ROUND_STEP.ANSWER;
     this.answer_timer_canceler = () => {};
     this.vote_timer_canceler = () => {};
 
@@ -155,7 +162,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
     const spy_guess_time = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.SPY_GUESS_TIME).getSelectedValueAsNumber();
     vote_ui.startTimer(this.getGameSession(), '🔹 의심스러운 답변을 선택한 플레이어를 지목해주세요.\n', spy_guess_time);
 
-    this.step = 1;
+    this.step = ROUND_STEP.VOTE;
 
     const [vote_timer, vote_timer_cancel] = cancelableSleep(spy_guess_time * 1000);
     this.vote_timer_canceler = vote_timer_cancel;
@@ -163,7 +170,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
     vote_ui.stopTimer();
 
-    this.step = 2;
+    this.step = ROUND_STEP.VOTE_RESULT;
 
     const vote_show_ui = new GameUI();
     vote_show_ui.embed
@@ -284,7 +291,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       return;
     }
 
-    if(interaction.isStringSelectMenu() && interaction.customId === 'answer_select' && this.step === 0) //답변 선택함
+    if(interaction.isStringSelectMenu() && interaction.customId === 'answer_select' && this.step === ROUND_STEP.ANSWER) //답변 선택함
     {
       const selected_value = interaction.values[0];
       const select_map_size = this.getGameData().addUserAnswerSelect(game_user, selected_value);
@@ -305,7 +312,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       return;
     }
 
-    if(this.step === 1 &&
+    if(this.step === ROUND_STEP.VOTE &&
       (interaction.isStringSelectMenu() && interaction.customId === 'vote') || 
       (interaction.isButton() && interaction.customId === 'vote_skip')) //투표함
     {

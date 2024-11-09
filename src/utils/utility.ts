@@ -2,52 +2,52 @@ import { VoiceConnection } from "@discordjs/voice";
 import { Message } from "discord.js";
 import path from "path";
 
-export function destroyVoiceConnect(voice_connection: VoiceConnection | null)
+export function destroyVoiceConnect(voice_connection: VoiceConnection | null) 
 {
-  if(!voice_connection)
+  if (!voice_connection) 
   {
     return;
   }
 
-  try
+  try 
   {
     voice_connection.destroy();
   }
-  catch(err)
+  catch (err) 
   {
     return;
   }
 }
 
-export function deleteMessage(message: Message | null)
+export function deleteMessage(message: Message | null) 
 {
-  if(!message)
+  if (!message) 
   {
     return;
   }
 
-  try
+  try 
   {
     message.delete();
   }
-  catch(err)
+  catch (err) 
   {
     return;
   }
 }
 
-export function sleep(duration: number)
+export function sleep(duration: number) 
 {
   return new Promise<void>((resolve, reject) => 
   {
     setTimeout(() => 
     {
-      resolve(); 
+      resolve();
     }, duration);
   });
 };
 
-export function cancelableSleep(duration: number): [promise: Promise<void>, cancel: () => void ] 
+export function cancelableSleep(duration: number): [promise: Promise<void>, cancel: () => void] 
 {
   let timeout: NodeJS.Timeout | null = null;
   let cancel: () => void;
@@ -60,7 +60,8 @@ export function cancelableSleep(duration: number): [promise: Promise<void>, canc
     }, duration);
 
     // `cancel` 함수 정의: 타이머를 중단하고, Promise를 즉시 완료
-    cancel = () => {
+    cancel = () => 
+    {
       if (timeout) 
       {
         clearTimeout(timeout);
@@ -84,11 +85,13 @@ export function generateUUID(): string //UUID v4 형식
   });
 };
 
-export function getRandomNumber(min: number, max: number): number {
+export function getRandomNumber(min: number, max: number): number 
+{
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function getRandomElement<T>(array: T[]): T {
+export function getRandomElement<T>(array: T[]): T 
+{
   if (array.length === 0) 
   {
     throw new Error('trying get random element but array is empty');
@@ -98,10 +101,12 @@ export function getRandomElement<T>(array: T[]): T {
   return array[randomIndex];
 }
 
-export function shuffleArray<T>(array: T[]): T[] {
-  for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]; // swap
+export function shuffleArray<T>(array: T[]): T[] 
+{
+  for (let i = array.length - 1; i > 0; i--) 
+  {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]; // swap
   }
   return array;
 }

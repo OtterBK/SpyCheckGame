@@ -8,6 +8,8 @@ export class GameData
   constructor()
   {
     this.data_map.set('INGAME_USERS', Array<GameUser>());
+    this.data_map.set('VOTE_MAP', new Map<string, string>());
+    this.data_map.set('VOTED_COUNT_MAP', new Map<number, Array<GameUser>>);
   }
 
   setInGameUsers(game_users: Array<GameUser> )
@@ -88,5 +90,54 @@ export class GameData
   expire()
   {
     this.data_map.clear();
+  }
+
+  addUserVoted(game_user: GameUser, value: string): number
+  {
+    const vote_map: Map<string, string> = this.data_map.get('VOTE_MAP');
+    vote_map.set(game_user.getId(), value);
+
+    return vote_map.size;
+  }
+
+  clearVoteMap()
+  {
+    const vote_map: Map<string, string> = this.data_map.get('VOTE_MAP');
+    const voted_count_map: Map<Number, Array<GameUser>> = this.data_map.get('VOTED_COUNT_MAP');
+    vote_map?.clear();
+    voted_count_map?.clear();
+  }
+
+  makeVotedCountMap() // 투표 개봉
+  {
+    const voted_count_map: Map<Number, Array<GameUser>> = this.data_map.get('VOTED_COUNT_MAP');
+    for(const game_user of this.getInGameUsers())
+    {
+      const voted_count = this.getVotedCount(game_user);
+      const user_arr = voted_count_map.get(voted_count);
+      if(user_arr)
+      {
+        user_arr.push(game_user);
+      }
+      else
+      {
+        voted_count_map.set(voted_count, [ game_user ]);
+      }
+    }
+  }  
+
+  getVotedCount(game_user: GameUser): number
+  {
+    let voted_count = 0;
+    const vote_map: Map<string, string> = this.data_map.get('VOTE_MAP');
+    for(const value of vote_map.values())
+    {
+      if(value === game_user.getId())
+      {
+        ++voted_count;
+      }
+    }
+
+    return voted_count;
   }
 }

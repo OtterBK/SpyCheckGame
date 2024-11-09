@@ -55,7 +55,6 @@ export class SpyCheckGameData extends GameData
     this.data_map.set('CUSTOM_QUESTION_UI_MAP', new Map<string, SpyCheckCustomQuestionUI>())
     this.data_map.set('QUESTION_LIST', Array<Question>());
     this.data_map.set('ANSWER_SELECT_MAP', new Map<string, string>());
-    this.data_map.set('VOTE_MAP', new Map<string, string>());
     this.data_map.set('CURRENT_QUESTION', null);
     this.data_map.set('GAME_RESULT', 'NULL');
     this.data_map.set('SPY_LIST_STRING', '');
@@ -197,40 +196,6 @@ export class SpyCheckGameData extends GameData
   {
     const map: Map<string, string> = this.data_map.get('ANSWER_SELECT_MAP');
     return map.get(game_user.getId()) ?? null;
-  }
-
-  addUserVoted(game_user: GameUser, value: string): number
-  {
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    map.set(game_user.getId(), value);
-
-    return map.size;
-  }
-
-  clearVoteMap()
-  {
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    map.clear();
-  }
-
-  getVoteMap(): Map<string, string>
-  {
-    return this.data_map.get('VOTE_MAP');
-  }
-
-  getVotedCount(game_user: GameUser): number
-  {
-    let voted_count = 0;
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    for(const value of map.values())
-    {
-      if(value === game_user.getId())
-      {
-        ++voted_count;
-      }
-    }
-
-    return voted_count;
   }
 
   setCurrentQuestion(question: Question)
