@@ -253,7 +253,7 @@
     },
     {
       "place": {
-        "name": "극장",
+        "name": "뮤지컬 극장",
         "image": "empty"
       },
       "roles": [
@@ -271,7 +271,7 @@
     },
     {
       "place": {
-        "name": "우주정거장",
+        "name": "우주 화성 기지",
         "image": "empty"
       },
       "roles": [
@@ -399,12 +399,12 @@
     },
     {
       "place": {
-        "name": "자동차 정비소",
+        "name": "차량 정비소",
         "image": "empty"
       },
       "roles": [
         { "name": "정비소 매니저", "image": "empty" },
-        { "name": "자동차 정비사", "image": "empty" },
+        { "name": "차량 정비사", "image": "empty" },
         { "name": "타이어 교체 전문가", "image": "empty" },
         { "name": "엔진 전문가", "image": "empty" },
         { "name": "도색 전문가", "image": "empty" },
@@ -488,7 +488,7 @@
     },
     {
       "place": {
-        "name": "휴게소",
+        "name": "고속도로 휴게소",
         "image": "empty"
       },
       "roles": [
@@ -747,7 +747,8 @@
         "image": "empty"
       },
       "roles": [
-        { "name": "야구 선수", "image": "empty" },
+        { "name": "타자", "image": "empty" },
+        { "name": "투수", "image": "empty" },
         { "name": "코치", "image": "empty" },
         { "name": "심판", "image": "empty" },
         { "name": "응원단", "image": "empty" },
@@ -802,14 +803,14 @@
       "roles": [
         { "name": "경주 기수", "image": "empty" },
         { "name": "마주", "image": "empty" },
-        { "name": "조련사", "image": "empty" },
+        { "name": "도박 중독자", "image": "empty" },
         { "name": "경마장 아나운서", "image": "empty" },
         { "name": "베팅 창구 직원", "image": "empty" },
         { "name": "말 관리사", "image": "empty" },
         { "name": "관람객", "image": "empty" },
-        { "name": "수의사", "image": "empty" },
+        { "name": "경비원", "image": "empty" },
         { "name": "경마 해설자", "image": "empty" },
-        { "name": "경비원", "image": "empty" }
+        { "name": "경주마", "image": "empty" }
       ]
     },
     {
@@ -861,7 +862,7 @@
         { "name": "기념품 판매원", "image": "empty" },
         { "name": "해설사", "image": "empty" },
         { "name": "수조 청소부", "image": "empty" },
-        { "name": "조명 기술자", "image": "empty" },
+        { "name": "돌고래", "image": "empty" },
         { "name": "안전 요원", "image": "empty" },
         { "name": "수질 검사원", "image": "empty" },
         { "name": "마스코트", "image": "empty" }
