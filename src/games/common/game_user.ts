@@ -69,6 +69,7 @@ export class GameUser
             {
                 embeds: [ui.embed],
                 components: ui.components,
+                files: ui.files,
             }
         )
     }
@@ -95,6 +96,7 @@ export class GameUser
             {
                 embeds: [ui.embed],
                 components: ui.components,
+                files: ui.files,
                 ephemeral: true
             }
         ).then(() => 
@@ -151,15 +153,15 @@ export class GameUser
         });         
     }
 
-    sendInteractionDeferReply(interaction: Interaction): Promise<void> | null
+    sendInteractionDeferUpdate(interaction: Interaction): Promise<void> | null
     {
-        if (!interaction.isRepliable())
+        if (!interaction.isMessageComponent())
         {
-            logger.error(`Cannot defer reply to interaction. do not update interaction. ${interaction.type}. user_id: ${this.getId()}`);
+            logger.error(`Cannot defer update to interaction. its not message component. do not update interaction. ${interaction.type}. user_id: ${this.getId()}`);
             return null;
         }
 
-        return interaction.deferReply()
+        return interaction.deferUpdate()
         .then(() => 
         {
             this.updateInteraction(interaction);

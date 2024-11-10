@@ -97,7 +97,6 @@ export class Role
 export class SpyFallGameData extends GameData
 {
   static PLACE_LIST_MAP: Map<PLACE_TYPE, Array<Place>> = SpyFallGameData.loadPlaceList();
-  static PLACE_SELECT_COMPONENTS: Array<ActionRowBuilder<StringSelectMenuBuilder>> = SpyFallGameData.buildPlaceSelectComponents();
 
   static loadPlaceList(): Map<PLACE_TYPE, Array<Place>>
   {
@@ -123,14 +122,17 @@ export class SpyFallGameData extends GameData
     return place_list_map;
   }
 
-  static buildPlaceSelectComponents(): Array<ActionRowBuilder<StringSelectMenuBuilder>> 
+  buildPlaceSelectComponents(is_extend_mode: boolean): Array<ActionRowBuilder<StringSelectMenuBuilder>>
   {
     const components: Array<ActionRowBuilder<StringSelectMenuBuilder>> = [];
 
     let current_select_menu: StringSelectMenuBuilder | null = null;
     let menu_num = 0;
     let place_num = 0;
-    for(const place of Array.from(SpyFallGameData.PLACE_LIST_MAP.values()).flat())
+
+    const target_place_list = is_extend_mode ? Array.from(SpyFallGameData.PLACE_LIST_MAP.values()).flat() : Array.from(SpyFallGameData.PLACE_LIST_MAP.get(PLACE_TYPE.NORMAL) ?? []);
+
+    for(const place of target_place_list)
     {
       if(place_num++ % 25 === 0)
       {
@@ -187,10 +189,9 @@ export class SpyFallGameData extends GameData
     super();
 
     this.data_map.set('SPY_LIST', []);
-    this.data_map.set('VOTE_MAP', new Map<string, string>());
-    this.data_map.set('CURRENT_PLACE', null);
-    this.data_map.set('ROLE_MAP', 'NULL');
     this.data_map.set('SPY_LIST_STRING', '');
+    this.data_map.set('CURRENT_PLACE', null);
+    this.data_map.set('ROLE_MAP', new Map<string, Role>());
     this.data_map.set('GAME_RESULT', GAME_RESULT_TYPE.CONTINUE);
   }
 
@@ -248,13 +249,13 @@ export class SpyFallGameData extends GameData
 
   setRole(game_user: GameUser, role: Role)
   {
-    const role_map = this.data_map.get('ROLE_MAP').includes(game_user.getId());
-    role_map.set()
+    const role_map = this.data_map.get('ROLE_MAP');
+    role_map.set(game_user.getId(), role);
   }
 
   getRole(game_user: GameUser): Role | null
   {
-    return this.data_map.get('ROLE_MAP').includes(game_user.getId()) ?? null;
+    return this.data_map.get('ROLE_MAP').get(game_user.getId()) ?? null;
   }
 
   setGameResult(result: GAME_RESULT_TYPE)

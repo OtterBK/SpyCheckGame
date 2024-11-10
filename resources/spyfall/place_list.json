@@ -108,7 +108,7 @@
     },
     {
       "place": {
-        "name": "영화 촬영장",
+        "name": "영화촬영장",
         "image": ""
       },
       "roles": [
@@ -253,7 +253,7 @@
     },
     {
       "place": {
-        "name": "뮤지컬 극장",
+        "name": "뮤지컬극장",
         "image": "LOCAL"
       },
       "roles": [
@@ -271,7 +271,7 @@
     },
     {
       "place": {
-        "name": "우주 화성 기지",
+        "name": "화성우주기지",
         "image": "LOCAL"
       },
       "roles": [
@@ -326,7 +326,7 @@
     },
     {
       "place": {
-        "name": "대형 마트",
+        "name": "대형마트",
         "image": "LOCAL"
       },
       "roles": [
@@ -362,7 +362,7 @@
     },
     {
       "place": {
-        "name": "도심 공원",
+        "name": "도심공원",
         "image": "LOCAL"
       },
       "roles": [
@@ -399,7 +399,7 @@
     },
     {
       "place": {
-        "name": "차량 정비소",
+        "name": "차량정비소",
         "image": "LOCAL"
       },
       "roles": [
@@ -435,7 +435,7 @@
     },
     {
       "place": {
-        "name": "야외 캠핑장",
+        "name": "야외캠핑장",
         "image": "LOCAL"
       },
       "roles": [
@@ -456,7 +456,7 @@
   [
     {
       "place": {
-        "name": "십자군 군대",
+        "name": "십자군군대",
         "image": "LOCAL"
       },
       "roles": [
@@ -488,7 +488,7 @@
     },
     {
       "place": {
-        "name": "고속도로 휴게소",
+        "name": "고속도로휴게소",
         "image": "LOCAL"
       },
       "roles": [
@@ -647,7 +647,7 @@
     },
     {
       "place": {
-        "name": "서커스 텐트",
+        "name": "서커스텐트",
         "image": "LOCAL"
       },
       "roles": [
@@ -711,7 +711,7 @@
     },
     {
       "place": {
-        "name": "애견 카페",
+        "name": "애견카페",
         "image": "LOCAL"
       },
       "roles": [
@@ -727,7 +727,7 @@
     },
     {
       "place": {
-        "name": "해양 연구소",
+        "name": "해양연구소",
         "image": "LOCAL"
       },
       "roles": [
@@ -743,7 +743,7 @@
     },
     {
       "place": {
-        "name": "야구 경기장",
+        "name": "야구경기장",
         "image": "LOCAL"
       },
       "roles": [

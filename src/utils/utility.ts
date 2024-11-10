@@ -47,10 +47,11 @@ export function sleep(duration: number)
   });
 };
 
-export function cancelableSleep(duration: number): [promise: Promise<void>, cancel: () => void] 
+export function cancelableSleep(duration: number): [promise: Promise<void>, cancel: () => number] 
 {
   let timeout: NodeJS.Timeout | null = null;
-  let cancel: () => void;
+  let cancel: () => number;
+  let estimated_time: number = Date.now() + duration;
 
   const promise = new Promise<void>((resolve) => 
   {
@@ -67,6 +68,7 @@ export function cancelableSleep(duration: number): [promise: Promise<void>, canc
         clearTimeout(timeout);
       }
       resolve(); // 타이머가 취소된 경우에도 `resolve` 호출
+      return estimated_time - Date.now();
     };
   });
 

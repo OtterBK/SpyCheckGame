@@ -31,8 +31,8 @@ export class EndingCycle extends SpyFallCycle
     let role_list = ``;
     for(const game_user of this.getGameSession().getParticipants())
     {
-      const role_map = this.getGameData().getRole(game_user);
-      role_list += `${game_user.getDisplayName()} => ${role_map}`;
+      const role = this.getGameData().getRole(game_user);
+      role_list += `${game_user.getDisplayName()} => ${role?.getName()}\n`;
     }
 
     const ending_ui = new GameUI();

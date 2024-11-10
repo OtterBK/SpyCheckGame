@@ -143,20 +143,15 @@ export class GameSession
     });
   }
 
-  sendUI(ui: GameUI): void
+
+  async sendUI(ui: GameUI): Promise<void>
   {
-    for(const table of this.tables)
-    {
-      table.sendUI(ui);
-    }
+    return Promise.all(this.tables.map(table => table.sendUI(ui))).then(() => {});
   }
 
-  editUI(ui: GameUI): void
+  async editUI(ui: GameUI): Promise<void>
   {
-    for(const table of this.tables)
-    {
-      table.editUI(ui);
-    }
+    return Promise.all(this.tables.map(table => table.editUI(ui))).then(() => {});
   }
 
   deleteUI(): void

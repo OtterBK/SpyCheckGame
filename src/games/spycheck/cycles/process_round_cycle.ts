@@ -192,6 +192,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
         )
       }
     }
+    
 
     this.getGameSession().sendUI(vote_show_ui);
 

@@ -21,9 +21,11 @@ enum ROUND_STEP
 
 export class ProcessRoundCycle extends SpyFallCycle
 {
-  private vote_timer_canceler:  () => void = () => {};
+  private vote_timer_canceler:  () => number = () => { return 0 };
   private round_step: ROUND_STEP = 0;
   private vote_ui: GameUI = new GameUI();
+  private remained_time: number = 0;
+
   constructor(game_core: SpyFallCore)
   {
     super(game_core, `SpyFallProcessRound`);
@@ -32,7 +34,7 @@ export class ProcessRoundCycle extends SpyFallCycle
   async enter(): Promise<boolean>
   {
     this.round_step = ROUND_STEP.VOTE;
-    this.vote_timer_canceler = () => {};
+    this.vote_timer_canceler = () => { return 0 };
 
     return true;
   }
@@ -42,7 +44,7 @@ export class ProcessRoundCycle extends SpyFallCycle
     this.vote_ui = new GameUI();
     this.vote_ui.embed
     .setColor(0x004AAD)
-    .setTitle('✔ **[ 게임 시작 ]**')
+    .setTitle('✔ **[ 토론 시작 ]**')
 
     const vote_component = this.getGameData().getUserSelectComponents('vote', `의심스러운 플레이어 지목하기`);
     this.vote_ui.components.push(vote_component);
@@ -53,7 +55,7 @@ export class ProcessRoundCycle extends SpyFallCycle
     this.vote_ui.startTimer(this.getGameSession(), 
     `
       🔹 모두에게 역할표를 분배했어요.
-      🔹 서로에게 대화를 나누며 스파이가 누군지 찾아내세요.
+      🔹 서로 대화를 나누며 스파이가 누군지 찾아내세요.
       🔹 예) 지금 어떤 옷을 입고있나요?, 여기 온지 얼마나 됐나요?
 
       \n
@@ -67,21 +69,32 @@ export class ProcessRoundCycle extends SpyFallCycle
     `, 
     spy_guess_time);
 
-    const [vote_timer, vote_timer_cancel] = cancelableSleep(spy_guess_time * 1000);
-    this.vote_timer_canceler = vote_timer_cancel;
-    await vote_timer;
-
-    this.vote_ui.stopTimer();
-    // @ts-ignore
-    if(this.round_step === ROUND_STEP.STOP) //더 이상 라운드 진행 필요 없으면
+    this.remained_time = spy_guess_time;
+    while(this.remained_time > 0) //시간 다~~ 쓸 때 까지
     {
-      return true;
+      const [vote_timer, vote_timer_cancel] = cancelableSleep(this.remained_time * 1000);
+      this.remained_time = 0; //우선 호출하면 0으로
+      this.vote_timer_canceler = vote_timer_cancel;
+      await vote_timer;
+      // @ts-ignore
+      while(this.round_step === ROUND_STEP.PAUSE) //일시정지 중이야?
+      {
+        await sleep(500); //천천히 기달
+      }
+
+      // @ts-ignore
+      if(this.round_step === ROUND_STEP.STOP) //더 이상 라운드 진행 필요 없으면
+      {
+        return true;
+      }
     }
 
+    //최후의 선택
+    this.vote_ui.stopTimer();
     this.round_step = ROUND_STEP.LAST_VOTE;
     await sleep(2000);
 
-    //최후의 선택
+    const last_vote_time = 6;
     let spy_remained_count = this.getGameData().getSpyRemainedCount();
 
     this.getGameData().clearVoteMap();
@@ -100,39 +113,74 @@ export class ProcessRoundCycle extends SpyFallCycle
       this.vote_ui.startTimer(this.getGameSession(), `
       ${i === 0 ? `` : `🔹 아직 스파이가 남아있어요!\n`}
         🔹 스파이로 의심되는 사람을 지목해주세요.
-        🔹 동표인 경우 먼저 지목된 사람을 심문해요.`, 60); 
+        🔹 동표인 경우 먼저 지목된 사람을 심문해요.\n`, last_vote_time); 
 
-      const [vote_timer, vote_timer_cancel] = cancelableSleep(spy_guess_time * 1000);
+      const [vote_timer, vote_timer_cancel] = cancelableSleep(last_vote_time * 1000);
       this.vote_timer_canceler = vote_timer_cancel;
       await vote_timer;
+  
+      this.vote_ui.stopTimer();
 
-      const voted_count_map = this.getGameData().makeVotedCountMap();
-      if(voted_count_map.size === 0)
+      const vote_show_ui = new GameUI();
+        vote_show_ui.embed
+        .setColor(0x004AAD)
+        .setTitle('📝 **[ 투표 결과 공개 ]**')
+        .setDescription(`🔹 투표 결과:\n`)
+
+      let most_voted_users: Array<GameUser> = [];
+      for(const [voted_count, voted_users] of this.getGameData().makeVotedCountMap())
       {
-        this.vote_ui = new GameUI();
-        this.vote_ui.embed
-        .setColor(0xBB0000)
-        .setTitle('❌ **[ 심문 실패 ]**')
-        .setDescription(`🔹 지목된 플레이어가 아무도 없어요.`)
+        if(voted_count === 0)
+        {
+          continue;
+        }
 
+        if(most_voted_users.length === 0)
+        {
+          most_voted_users = voted_users;
+        }
+
+        for(const voted_user of voted_users)
+        {
+          vote_show_ui.embed.addFields(
+            {
+              name: voted_user.getDisplayName(),
+              value: `${voted_count}표`,
+              inline: false,
+            },
+          )
+        }
+      }
+
+      if(most_voted_users.length === 0)
+      {
+        vote_show_ui.embed
+        .setDescription(`🔹 지목된 플레이어가 없어요...`);
+      }
+
+      this.getGameSession().sendUI(vote_show_ui);
+      await sleep(3000);
+
+      if(most_voted_users.length === 0)
+      {
         await this.processSpySurvive();
       }
       else
       {
-        const spy_guessed_user = voted_count_map.entries().next().value?.[1][0] ?? null;
+        const spy_guessed_user = most_voted_users[0];
         await this.guessSpy(spy_guessed_user!);
+      }
 
-        // @ts-ignore
-        if(this.stop_round === true) //라운드 더 이상 진행 필요 없으면
-        {
-          return true;
-        }
+      // @ts-ignore
+      if(this.round_step === ROUND_STEP.STOP) //라운드 더 이상 진행 필요 없으면
+      {
+        return true;
       }
 
       this.getGameData().clearVoteMap();
     }
 
-    await this.processCivilWin();
+    await this.processCivilFindAllSpy(); //여기까지 왔으면 시민 승리인거임
     return true;
   }
 
@@ -167,25 +215,7 @@ export class ProcessRoundCycle extends SpyFallCycle
       this.pause(); //일단 멈춰
 
       const selected_place_name = interaction.values[0];
-      this.guessPlace(game_user, selected_place_name)
-      .then(() => {
-        if(this.round_step === ROUND_STEP.STOP) //머야 맞춘거야?
-        {
-          this.vote_timer_canceler(); //타이머 멈춰
-        }
-        else //에잉 못 맞췄어?
-        {
-          let spy_remained_count = this.getGameData().getSpyRemainedCount();
-          if(spy_remained_count === 0) //머야 스파이 다 죽었어?
-          {
-            this.vote_timer_canceler(); //타이머 멈춰
-          }
-          else //스파이 아직 남아있다면
-          {
-            this.resume(); //킵 고잉
-          }
-        }
-      });
+      this.guessPlace(game_user, selected_place_name);
       
       return;
     }
@@ -214,6 +244,8 @@ export class ProcessRoundCycle extends SpyFallCycle
       return true;
     }
 
+    this.getGameData().addUserVoted(game_user, selected_value);
+
     let vote_status = ``;
     for(const [user, target] of this.getGameData().getVoteMap())
     {
@@ -221,39 +253,27 @@ export class ProcessRoundCycle extends SpyFallCycle
     }
 
     game_user.sendInteractionReply(interaction, {
-      content: `\`\`\`
-      🔹 ${game_user.getDisplayName()}님이 ${this.getGameData().getDisplayName(selected_value) ?? selected_value}님을 스파이로 지목했어요.
-      ${this.round_step === ROUND_STEP.VOTE ?
+      content: `\`\`\`🔹 ${game_user.getDisplayName()}님이 ${this.getGameData().getDisplayName(selected_value) ?? selected_value}님을 스파이로 지목했어요.\n${
+        this.round_step === ROUND_STEP.VOTE ?
         `🔹 ${Math.ceil(this.getGameData().getInGameUserCount() / 2)}명 이상에게 지목되면 심문을 시작합니다.`
-        : ''
+        : `🔹 가장 많이 지목된 플레이어를 심문합니다.`
       }
-      \n
-      📩 지목 현황
-      ${vote_status}
-      \`\`\``,
+      \n📩 지목 현황\n${vote_status}\`\`\``,
       ephemeral: false
     });
+    
 
     const voted_count = this.getGameData().getVotedCount(target_game_user);
     if(this.round_step === ROUND_STEP.VOTE && voted_count >= this.getGameData().getInGameUserCount() / 2) //과반 수 이상 선택했으면
     {
       this.pause();
 
-      this.getGameSession().sendMessage(`\`\`\`🔸 과반 수 이상의 플레이어가 ${target_game_user.getDisplayName()}님을 지목했어요.\n🔸${target_game_user.getDisplayName()} 님을 심문할게요.\`\`\``)
-      this.getGameSession().playBGM(BGM_TYPE.CHAT);
-
-      this.guessSpy(target_game_user)
-      .then(() => 
-      {
-        if(this.round_step !== ROUND_STEP.STOP) //스파이를 찾았다면 킵 고잉
-        {
-          this.resume();
-        }
-        else //못 찾으면?
-        {
-          this.vote_timer_canceler(); //바로 타이머 중지
-        }
-      });
+      sleep(3000).then(() => {
+        this.getGameSession().sendMessage(`\`\`\`🔸 과반수 이상의 플레이어가 ${target_game_user.getDisplayName()}님을 지목했어요.\n🔸 ${target_game_user.getDisplayName()} 님을 심문할게요.\`\`\``)
+        this.getGameSession().playBGM(BGM_TYPE.CHAT);
+  
+        this.guessSpy(target_game_user);
+      })
     }
 
     if(this.round_step === ROUND_STEP.LAST_VOTE 
@@ -274,13 +294,13 @@ export class ProcessRoundCycle extends SpyFallCycle
       return false;
     }
 
-    if(this.getGameData().isSpy(game_user))
+    if(this.getGameData().isSpy(game_user) === false)
     {
       game_user.sendInteractionReply(interaction, {
         content: `\`\`\`🔸 당신은 스파이가 아니네요...어떻게 장소를 선택하신거죠?\`\`\``,
         ephemeral: true
       })
-      return true;
+      return false;
     }
 
     if(this.round_step === ROUND_STEP.LAST_VOTE) //최후의 선택 시간이면
@@ -288,15 +308,22 @@ export class ProcessRoundCycle extends SpyFallCycle
       game_user.sendInteractionReply(interaction, {
         content: `\`\`\`🔸 최후의 선택 시간에는 장소 추측을 할 수 없어요.\`\`\``,
         ephemeral: true
-      })
-      return true;
+      });
+      return false;
     }
+
+    game_user.sendInteractionReply(interaction, {
+      content: `\`\`\`🔸 ${interaction.values[0]} 장소로 정보를 수집했어요.\`\`\``,
+      ephemeral: true
+    });
 
     return true;
   }
 
   async guessSpy(spy_guessed_user: GameUser)
   {
+    await sleep(3000);
+
     const spy_killing_ui = new GameUI();
     spy_killing_ui.embed
     .setColor(0xD92334)
@@ -304,13 +331,13 @@ export class ProcessRoundCycle extends SpyFallCycle
     .setDescription(`🔹 ${spy_guessed_user.getDisplayName()} 님을 심문하는 중이에요.`)
 
     this.getGameSession().sendUI(spy_killing_ui);
-
     this.getGameSession().playBGM(BGM_TYPE.PUNCH);
 
     await sleep(3000);
 
+    this.getGameData().removeInGameUser(spy_guessed_user.getId());
+    
     const spy_result_ui = new GameUI();
-
     if(this.getGameData().isSpy(spy_guessed_user))
     {
       spy_result_ui.embed
@@ -318,6 +345,18 @@ export class ProcessRoundCycle extends SpyFallCycle
       .setTitle('👻 **[ 스파이!!! ]**')
       .setDescription(`🔹 ${spy_guessed_user.getDisplayName()} 님은 스파이였습니다!`)
       this.getGameSession().playBGM(BGM_TYPE.GUN_SHOT);
+      this.getGameSession().sendUI(spy_result_ui);
+
+      await sleep(3500);
+      if(this.getGameData().getSpyRemainedCount() > 0) //스파이 아직 남아있다면
+      {
+        this.getGameSession().sendMessage(`\`\`\`🔹 아직 스파이가 남아있어요.\`\`\``);
+        this.resume();
+      }
+      else
+      {
+        await this.processCivilFindAllSpy();
+      }
     }
     else
     {
@@ -326,14 +365,11 @@ export class ProcessRoundCycle extends SpyFallCycle
       .setTitle('😇 **[ 무고한 시민 ]**')
       .setDescription(`🔹 ${spy_guessed_user.getDisplayName()} 님은 스파이가 아니었습니다!`)
       this.getGameSession().playBGM(BGM_TYPE.ERROR);
+      this.getGameSession().sendUI(spy_result_ui);
 
-      this.processSpyWin();
+      await sleep(3500);
+      await this.processSpyFake();
     }
-
-    this.getGameSession().sendUI(spy_result_ui);
-    this.getGameData().removeInGameUser(spy_guessed_user.getId());
-
-    await sleep(3500);
   }
 
   async guessPlace(game_user: GameUser, selected_place_name: string)
@@ -345,48 +381,55 @@ export class ProcessRoundCycle extends SpyFallCycle
     .setDescription(`🔹 잠깐! 스파이 ${game_user.getDisplayName()}님이 정보 수집을 완료했습니다!`)
 
     this.getGameSession().sendUI(guessing_ui);
+    this.getGameSession().playBGM(BGM_TYPE.PLING);
 
-    await sleep(3000);
+    await sleep(3500);
 
     const place_ui = new GameUI();
     place_ui.embed
     .setColor(0xBF0000)
     .setTitle(`✉ **[ 정보를 검증하는 중... ]**`)
     .setDescription(`🔹 스파이가 선택한 장소: **${selected_place_name}**`)
-    .setImage(`attachment://${selected_place_name}.webp`)
+    .setImage(`attachment://thumbnail.png`)
     
     place_ui.files.push(
-      new AttachmentBuilder(`${RESOURCE_CONFIG.SPYFALL_PATH} + /thumbnails/${place_ui}.webp`
+      new AttachmentBuilder(`${RESOURCE_CONFIG.SPYFALL_PATH}/thumbnails/${selected_place_name}.png`, {
+        name: `thumbnail.png`
+      }
     ));
 
-    await sleep(3000);
+    this.getGameSession().sendUI(place_ui);
+    this.getGameSession().playBGM(BGM_TYPE.PLING);
+
+    await sleep(4500);
 
     const current_place = this.getGameData().getCurrentPlace();
     if(current_place.getName() === selected_place_name)
     {
-      this.processSpySuccessGuessPlace(game_user);
+      await this.processSpySuccessGuessPlace(game_user);
     }
     else
     {
-      this.processSpyFailedGuessPlace(game_user);
+      await this.processSpyFailedGuessPlace(game_user);
     }
   }
 
-  async processSpyWin()
+  async processSpyFake()
   {
     this.getGameData().setGameResult(GAME_RESULT_TYPE.SPY_WIN);
     this.getGameSession().playBGM(BGM_TYPE.SCORE_ALARM);
 
     const result_ui = new GameUI();
     result_ui.embed
+    .setColor(0xBF0000)
     .setTitle('🐱‍👤 **[ 스파이의 계획 성공 ]**')
     .setDescription(`🔹 시민들이 무고한 사람을 처형했어요...`);
-
+    
+    this.getGameSession().playBGM(BGM_TYPE.FAIL);
     this.getGameSession().sendUI(result_ui);
 
-    this.round_step = ROUND_STEP.STOP;
-
     await sleep(3500);
+    this.round_step = ROUND_STEP.STOP;
   }
 
   async processSpySurvive()
@@ -396,14 +439,16 @@ export class ProcessRoundCycle extends SpyFallCycle
 
     const result_ui = new GameUI();
     result_ui.embed
+    .setColor(0xBF0000)
     .setTitle('🐱‍👤 **[ 스파이의 생존 성공 ]**')
     .setDescription(`🔹 스파이가 살아남았어요.`)
 
     this.getGameSession().sendUI(result_ui);
+    this.getGameSession().playBGM(BGM_TYPE.SUCCESS);
 
-    this.round_step = ROUND_STEP.STOP;
-
+    
     await sleep(3500);
+    this.round_step = ROUND_STEP.STOP;
   }
 
   async processSpySuccessGuessPlace(game_user: GameUser)
@@ -413,14 +458,15 @@ export class ProcessRoundCycle extends SpyFallCycle
 
     const result_ui = new GameUI();
     result_ui.embed
+    .setColor(0xBF0000)
     .setTitle('🐱‍👤 **[ 스파이의 정보 수집 성공 ]**')
     .setDescription(`🔹 스파이 ${game_user.getDisplayName()}님이 현재 장소를 알아냈어요.`)
 
     this.getGameSession().sendUI(result_ui);
-
-    this.round_step = ROUND_STEP.STOP;
+    this.getGameSession().playBGM(BGM_TYPE.SUCCESS);
 
     await sleep(3500);
+    this.round_step = ROUND_STEP.STOP;
   }
 
   async processSpyFailedGuessPlace(game_user: GameUser)
@@ -430,17 +476,19 @@ export class ProcessRoundCycle extends SpyFallCycle
 
     const result_ui = new GameUI();
     result_ui.embed
+    .setColor(0x004AAD)
     .setTitle('✔ **[ 스파이의 정보 수집 실패 ]**')
     .setDescription(`🔹 스파이가 현재 장소를 알아내지 못했어요.`)
 
     this.getGameSession().sendUI(result_ui);
+    this.getGameSession().playBGM(BGM_TYPE.FAIL);
 
     await sleep(3000);
 
     const spy_result_ui = new GameUI();
 
     spy_result_ui.embed
-    .setColor(0xD92334)
+    .setColor(0x004AAD)
     .setTitle('👻 **[ 처형 ]**')
     .setDescription(`🔹 ${game_user.getDisplayName()}님은 처형되었습니다.`)
     this.getGameSession().playBGM(BGM_TYPE.GUN_SHOT);
@@ -449,22 +497,33 @@ export class ProcessRoundCycle extends SpyFallCycle
     this.getGameData().removeInGameUser(game_user.getId());
 
     await sleep(3500);
+
+    if(this.getGameData().getSpyRemainedCount() > 0) //스파이 아직 남아있다면
+    {
+      this.getGameSession().sendMessage(`\`\`\`🔹 아직 스파이가 남아있어요.\`\`\``);
+      this.resume();
+    }
+    else
+    {
+      await this.processCivilFindAllSpy();
+    }
   }
 
-  async processCivilWin()
+  async processCivilFindAllSpy()
   {
     this.getGameData().setGameResult(GAME_RESULT_TYPE.CIVILIAN_WIN); 
 
     const result_ui = new GameUI();
     result_ui.embed
+    .setColor(0x004AAD)
     .setTitle('✔ **[ 모든 스파이 색출 성공 ]**')
     .setDescription(`🔹 모든 스파이를 찾아냈어요!`)
 
     this.getGameSession().sendUI(result_ui);
-
-    this.round_step = ROUND_STEP.STOP;
+    this.getGameSession().playBGM(BGM_TYPE.SUCCESS);
 
     await sleep(3500);
+    this.round_step = ROUND_STEP.STOP;
   }
 
   pause()
@@ -472,6 +531,7 @@ export class ProcessRoundCycle extends SpyFallCycle
     this.round_step = ROUND_STEP.PAUSE;
     this.vote_ui.pauseTimer(); //타이머 잠시 중지
     this.getGameSession().pauseAudio();
+    this.remained_time = this.vote_timer_canceler(); //sleep 타이머는 그냥 끝내고 타이머 남은 시간 저장
   }
 
   resume()

@@ -177,7 +177,7 @@ export class GameData
       .addOptions(
           this.getInGameUsers().map(game_user => 
           {
-            return new StringSelectMenuOptionBuilder().setLabel(game_user.getDisplayName()).setValue(game_user.getDisplayName());
+            return new StringSelectMenuOptionBuilder().setLabel(game_user.getDisplayName()).setValue(game_user.getId());
           })
       )
     );

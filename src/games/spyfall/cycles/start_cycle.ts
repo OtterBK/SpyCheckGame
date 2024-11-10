@@ -31,6 +31,8 @@ export class StartCycle extends SpyFallCycle
       .setTitle('장소 및 역할 선택 중...');
 
     this.getGameSession().sendUI(spy_choosing_alert_ui);
+
+    await sleep(3000); //그냥 3초 대기
       
     //스파이 선정
     this.pickRandomSpy();
@@ -43,7 +45,7 @@ export class StartCycle extends SpyFallCycle
     //역할 분배
     this.pickRandomRole(place);
 
-    await sleep(4000); //그냥 4초 대기
+    await sleep(2000); //그냥 2초 대기
 
     return true;
   }
@@ -79,6 +81,7 @@ export class StartCycle extends SpyFallCycle
   {
     place.shuffleRoles();
 
+    const is_extend_mode = this.getGameCore().getGameOptions().getOption(SPYFALL_OPTION.EXTEND_MODE_ENABLE).getSelectedValueAsBoolean();
     const spy_count = this.getGameCore().getGameOptions().getOption(SPYFALL_OPTION.SPY_COUNT).getSelectedValueAsNumber();
     let spy_image_number = 0;
     for(const game_user of this.getGameData().getInGameUsers())
@@ -103,11 +106,11 @@ export class StartCycle extends SpyFallCycle
         role_ui.embed
         .setColor(0xC20000)
         .setDescription(`\n
-          🍀 장소: 스파이는 장소를 몰라요.
-          🎬 역할: 스파이
-          🐱‍👤 스파이 목록:\n${this.getGameData().getSpyListString()}
+          🍀 장소: 스파이는 장소를 몰라요.\n
+          🎬 역할: **스파이**\n
+          🐱‍👤 스파이 목록:${this.getGameData().getSpyListString()}
         \n`)
-        .setImage(`attachment://스파이${spy_image_number}webp`);
+        .setImage(`attachment://thumbnail.png`);
         if(spy_count > 1) //스파이가 복수면
         {
           role_ui.embed.setFooter({text: `🔹 동료 스파이와 협력하여 장소가 어딘지 추측하세요!`})
@@ -118,10 +121,11 @@ export class StartCycle extends SpyFallCycle
         }
 
         role_ui.files.push(
-          new AttachmentBuilder(`${RESOURCE_CONFIG.SPYFALL_PATH} + /thumbnails/스파이${spy_image_number}}.webp`
-        ));
+          new AttachmentBuilder(`${RESOURCE_CONFIG.SPYFALL_PATH}/thumbnails/스파이${spy_image_number}.png`, {
+            name: `thumbnail.png`
+          }));
 
-        role_ui.components = SpyFallGameData.PLACE_SELECT_COMPONENTS;
+        role_ui.components = this.getGameData().buildPlaceSelectComponents(is_extend_mode);
       }
       else
       {
@@ -130,14 +134,15 @@ export class StartCycle extends SpyFallCycle
         role_ui.embed
         .setColor(0x106AA9)
         .setDescription(`\n
-          🍀 장소: **${place.getName()}**
-          🎬 역할: **${role.getName()}**
+          🍀 장소: **${place.getName()}**\n
+          🎬 역할: **${role.getName()}**\n
         \n`)
-        .setImage(`attachment://${place.getName()}.webp`)
-        .setFooter({text : `🔹 스파이로 의심되는 플레이어를 지목하세요!`})
+        .setImage(`attachment://thumbnail.png`)
         
         role_ui.files.push(
-          new AttachmentBuilder(`${RESOURCE_CONFIG.SPYFALL_PATH} + /thumbnails/${place.getName()}.webp`
+          new AttachmentBuilder(`${RESOURCE_CONFIG.SPYFALL_PATH}/thumbnails/${place.getName()}.png`, {
+            name: `thumbnail.png`
+          }
         ));
       }
 

@@ -77,6 +77,8 @@ export class SpyFallCore extends GameCore
 
     this.game_options.addOption(
       new GameOption('토론 시간', SPYFALL_OPTION.SPY_GUESS_TIME, '스파이가 누구인지 추측할 토론 시간을 설정합니다.')
+        .addChoice(new OptionChoice('1분', '60', '스파이 색출을 위한 토론 시간을 1분 제공합니다.'))
+        .addChoice(new OptionChoice('3분', '180', '스파이 색출을 위한 토론 시간을 3분 제공합니다.'))
         .addChoice(new OptionChoice('5분', '300', '스파이 색출을 위한 토론 시간을 5분 제공합니다.'))
         .addChoice(new OptionChoice('6분', '360', '스파이 색출을 위한 토론 시간을 6분 제공합니다.'))
         .addChoice(new OptionChoice('7분', '420', '스파이 색출을 위한 토론 시간을 7분 제공합니다.'))

@@ -110,10 +110,10 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
     this.voice_connection?.subscribe(game_session.getAudioPlayer());
   }
 
-  sendUI(ui: GameUI)
+  async sendUI(ui: GameUI)
   {
     //components
-    this.channel.send(
+    return this.channel.send(
       {
         embeds: [ui.embed],
         components: ui.components,
@@ -128,7 +128,7 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
     });
   }
 
-  editUI(ui: GameUI)
+  async editUI(ui: GameUI)
   {
     if(!this.current_ui_message)
     {
@@ -138,10 +138,11 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
 
     try
     {
-      this.current_ui_message.edit(
+      return this.current_ui_message.edit(
         {
           embeds: [ui.embed],
           components: ui.components,
+          files: ui.files,
         }
       );
     }

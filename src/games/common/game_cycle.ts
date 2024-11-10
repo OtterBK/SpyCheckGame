@@ -254,7 +254,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
     const players_count = this.getGameSession().getParticipants().length;
     if(players_count < this.getGameCore().getMinPlayers())
     {
-       game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
+      game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
       return;
     }
 
