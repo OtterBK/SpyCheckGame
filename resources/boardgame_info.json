@@ -2,7 +2,7 @@
     {
         "id": "SPYCHECK",
         "name": "스파이체크",
-        "min_players": 2,
+        "min_players": 3,
         "max_players": 9,
         "difficulty": "하",
         "very_simple_description": "질문과 선택한 답변을 통해 스파이를 찾아내는 심리 추리 게임",

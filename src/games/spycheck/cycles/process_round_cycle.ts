@@ -122,7 +122,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       answer_show_ui.embed.addFields(
         {
           name: user.getDisplayName(),
-          value: selected_answer_value,
+          value: this.getGameData().getDisplayName(selected_answer_value) ?? selected_answer_value,
           inline: false,
         },
       )
@@ -288,7 +288,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       }
 
       game_user.sendInteractionReply(interaction, {
-        content: `\`\`\`🔸 선택한 답변: ${selected_value}\`\`\``,
+        content: `\`\`\`🔸 선택한 답변: ${this.getGameData().getDisplayName(selected_value) ?? selected_value}\`\`\``,
         ephemeral: true
       })
   

@@ -137,7 +137,7 @@ export class SpyFallGameData extends GameData
       if(place_num++ % 25 === 0)
       {
         current_select_menu = new StringSelectMenuBuilder()
-        .setCustomId(`guess_place#${menu_num}`)
+        .setCustomId(`guess_place#${menu_num++}`)
         .setPlaceholder('의심되는 장소 선택');
         
         components.push(
