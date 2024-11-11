@@ -34,6 +34,11 @@ export abstract class GameCycle
     this.cycle_name = cycle_name;
   }
 
+  getCycleName(): string
+  {
+    return this.cycle_name;
+  }
+
   setNextCycleType(next_cycle: CycleType)
   {
     this.next_cycle_type = next_cycle;

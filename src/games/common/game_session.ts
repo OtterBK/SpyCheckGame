@@ -36,6 +36,11 @@ export class GameSession
 
     GameSession.GAME_SESSIONS.set(this.uuid, this);
   }
+
+  getSessionId(): string
+  {
+    return this.uuid;
+  }
   
   setHost(host: GuildMember)
   {

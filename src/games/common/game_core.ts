@@ -13,6 +13,7 @@ export abstract class GameCore
   protected game_name: string;
   protected min_players: number;
   protected max_players: number;
+  protected difficulty: string;
   protected game_simple_description: string;
   protected game_description: string;
   protected game_thumbnail: string;
@@ -33,6 +34,7 @@ export abstract class GameCore
     this.game_name = game_info.name;
     this.min_players = game_info.min_players;
     this.max_players = game_info.max_players;
+    this.difficulty = game_info.difficulty;
     this.game_simple_description = game_info.simple_description;
     this.game_description = game_info.description;
     this.game_thumbnail = game_info.thumbnail;
@@ -117,6 +119,8 @@ export abstract class GameCore
     }
 
     this.current_cycle = cycle;
+
+    logger.info(`${this.getGameSession().getSessionId()} is calling cycle ${this.current_cycle.getCycleName()} from ${this.game_id}`);
 
     let keep_going: boolean = true;
     

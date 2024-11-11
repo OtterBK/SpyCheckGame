@@ -11,7 +11,7 @@ export class GameInfo
     public name: string;
     public min_players: number;
     public max_players: number;
-    public difficulty: number;
+    public difficulty: string;
     public very_simple_description: string;
     public simple_description: string;
     public description: string;
@@ -22,7 +22,7 @@ export class GameInfo
         name: string,
         min_players: number,
         max_players: number,
-        difficulty: number,
+        difficulty: string,
         very_simple_description: string,
         simple_description: string,
         description: string,
