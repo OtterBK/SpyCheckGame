@@ -7,6 +7,7 @@ import { saveGameOptionsToCache } from "../factory";
 import { deleteMessage } from "../../utils/utility";
 import { BGM_TYPE } from "../../managers/bgm_manager";
 import { GameUser } from "./game_user";
+import { GameOption } from "./game_options";
 const logger = getLogger('GameCycle');
 
 export enum CycleType
@@ -63,6 +64,11 @@ export abstract class GameCycle
   getGameSession(): GameSession
   {
     return this.game_core.getGameSession();
+  }
+
+  getOption(option_id: string): GameOption
+  {
+    return this.getGameCore().getGameOptions().getOption(option_id);
   }
 
   expire(): void
@@ -342,7 +348,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
     }
 
     const option_id = select_interaction.values[0];
-    const option = this.getGameCore().getGameOptions().getOption(option_id);
+    const option = this.getOption(option_id);
     if(!option)
     {
       return;
@@ -370,7 +376,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
     }
 
     const option_id = select_interaction.customId.split('#')[1];
-    const option = this.getGameCore().getGameOptions().getOption(option_id);
+    const option = this.getOption(option_id);
     if(!option)
     {
       return;

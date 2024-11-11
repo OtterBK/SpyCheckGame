@@ -16,7 +16,7 @@ export class LobbyCycle extends LobbyCycleTemplate
   checkCanStartGame(game_user: GameUser, interaction: RepliableInteraction): boolean 
   {
     const min_roles_count = 8;
-    const spy_count = this.getGameCore().getGameOptions().getOption(SPYFALL_OPTION.SPY_COUNT).getSelectedValueAsNumber();
+    const spy_count = this.getOption(SPYFALL_OPTION.SPY_COUNT).getSelectedValueAsNumber();
     const participant_count = this.getGameSession().getParticipants().length;
 
     const missing_spy_count = participant_count - (min_roles_count + spy_count);

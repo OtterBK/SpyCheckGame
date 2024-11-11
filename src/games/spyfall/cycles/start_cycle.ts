@@ -38,7 +38,7 @@ export class StartCycle extends SpyFallCycle
     this.pickRandomSpy();
     
     //장소 선정
-    const is_extend_mode = this.getGameCore().getGameOptions().getOption(SPYFALL_OPTION.EXTEND_MODE_ENABLE).getSelectedValueAsBoolean();
+    const is_extend_mode = this.getOption(SPYFALL_OPTION.EXTEND_MODE_ENABLE).getSelectedValueAsBoolean();
     const place = this.getGameData().getRandomPlace(is_extend_mode);
     this.getGameData().setCurrentPlace(place);
 
@@ -68,7 +68,7 @@ export class StartCycle extends SpyFallCycle
       spy_candidates.push(participant);
     }
 
-    const spy_count = this.getGameCore().getGameOptions().getOption(SPYFALL_OPTION.SPY_COUNT).getSelectedValueAsNumber();
+    const spy_count = this.getOption(SPYFALL_OPTION.SPY_COUNT).getSelectedValueAsNumber();
     for(let i = 0; i < spy_count && spy_candidates.length > 0; ++i)
     {
       const random_index = Math.floor(Math.random() * spy_candidates.length);
@@ -81,8 +81,8 @@ export class StartCycle extends SpyFallCycle
   {
     place.shuffleRoles();
 
-    const is_extend_mode = this.getGameCore().getGameOptions().getOption(SPYFALL_OPTION.EXTEND_MODE_ENABLE).getSelectedValueAsBoolean();
-    const spy_count = this.getGameCore().getGameOptions().getOption(SPYFALL_OPTION.SPY_COUNT).getSelectedValueAsNumber();
+    const is_extend_mode = this.getOption(SPYFALL_OPTION.EXTEND_MODE_ENABLE).getSelectedValueAsBoolean();
+    const spy_count = this.getOption(SPYFALL_OPTION.SPY_COUNT).getSelectedValueAsNumber();
     let spy_image_number = 0;
     for(const game_user of this.getGameData().getInGameUsers())
     {

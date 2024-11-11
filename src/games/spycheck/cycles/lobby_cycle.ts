@@ -15,7 +15,7 @@ export class LobbyCycle extends LobbyCycleTemplate
 
   checkCanStartGame(game_user: GameUser, interaction: RepliableInteraction): boolean 
   {
-    const spy_count = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.SPY_COUNT).getSelectedValueAsNumber();
+    const spy_count = this.getOption(SPYCHECK_OPTION.SPY_COUNT).getSelectedValueAsNumber();
     const participant_count = this.getGameSession().getParticipants().length;
 
     if(spy_count >= participant_count/2)

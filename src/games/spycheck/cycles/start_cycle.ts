@@ -29,16 +29,14 @@ export class StartCycle extends SpyCheckCycle
       .setTitle('스파이 선택 중...');
 
     this.getGameSession().sendUI(spy_choosing_alert_ui);
-
     await sleep(2000);
       
     //스파이 선정
     this.pickRandomSpy();
-
     await sleep(2000);
 
     //커스텀 질문 여부
-    const custom_question_enabled = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.CUSTOM_QUESTION_ENABLE).getSelectedValueAsBoolean();
+    const custom_question_enabled = this.getOption(SPYCHECK_OPTION.CUSTOM_QUESTION_ENABLE).getSelectedValueAsBoolean();
     if(custom_question_enabled)
     {
       await this.waitForCustomQuestion();
@@ -47,8 +45,7 @@ export class StartCycle extends SpyCheckCycle
     //남은 질문 세팅
     this.getGameData().shuffleQuestionList(); //섞고
 
-    const spy_count = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.SPY_COUNT).getSelectedValueAsNumber();
-
+    const spy_count = this.getOption(SPYCHECK_OPTION.SPY_COUNT).getSelectedValueAsNumber();
     const deficit_count = (spy_count + 2) - this.getGameData().getQuestionList().length; //스파이 수 + 2개의 질문이 필요하다.
     if(deficit_count > 0) //부족하면 채우고 
     {
@@ -175,7 +172,7 @@ export class StartCycle extends SpyCheckCycle
     .setDescription('🔸 당신은 스파이입니다.')
     .setFooter({text: '이 메시지는 당신에게만 보여요.'})
 
-    const spy_count = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.SPY_COUNT).getSelectedValueAsNumber();
+    const spy_count = this.getOption(SPYCHECK_OPTION.SPY_COUNT).getSelectedValueAsNumber();
     for(let i = 0; i < spy_count && spy_candidates.length > 0; ++i)
     {
       const random_index = Math.floor(Math.random() * spy_candidates.length);
@@ -190,7 +187,7 @@ export class StartCycle extends SpyCheckCycle
 
   async waitForCustomQuestion()
   {
-    const custom_question_time = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.CUSTOM_QUESTION_TIME).getSelectedValueAsNumber();
+    const custom_question_time = this.getOption(SPYCHECK_OPTION.CUSTOM_QUESTION_TIME).getSelectedValueAsNumber();
 
     this.getGameSession().playBGM(BGM_TYPE.PLING);
 
