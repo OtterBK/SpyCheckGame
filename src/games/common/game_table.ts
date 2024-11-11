@@ -71,6 +71,8 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
         logger.error(`Failed to voice reconnect. guild_id: ${this.guild.id}`);
         
         destroyVoiceConnect(this.voice_connection);
+
+        this.sendMessage(`\`\`\`🔉 봇의 음성 연결이 끊겼어요. '/음성재연결' 명령어로 다시 데려올 수 있어요!\`\`\``);
       }
     });
 
@@ -96,13 +98,26 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
     return true;
   }
 
-  sendUI(ui: GameUI)
+  reconnectVoice()
+  {
+    const game_session = this.getGameSession()
+    if(!game_session)
+    {
+      return;
+    }
+
+    this.createVoiceConnection();
+    this.voice_connection?.subscribe(game_session.getAudioPlayer());
+  }
+
+  async sendUI(ui: GameUI)
   {
     //components
-    this.channel.send(
+    return this.channel.send(
       {
         embeds: [ui.embed],
         components: ui.components,
+        files: ui.files,
       }
     ).then((message: Message) => 
     {
@@ -113,7 +128,7 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
     });
   }
 
-  editUI(ui: GameUI)
+  async editUI(ui: GameUI)
   {
     if(!this.current_ui_message)
     {
@@ -123,10 +138,11 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
 
     try
     {
-      this.current_ui_message.edit(
+      return this.current_ui_message.edit(
         {
           embeds: [ui.embed],
           components: ui.components,
+          files: ui.files,
         }
       );
     }
@@ -171,7 +187,7 @@ export class GameTable //게임을 진행하는 일종의 테이블(책상)
 
   expire(): void
   {
-    logger.info(`Expiring game session. guild id: ${this.guild.id}`);
+    logger.info(`Expiring game table. guild id: ${this.guild.id}`);
 
     destroyVoiceConnect(this.voice_connection);
 

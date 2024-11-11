@@ -3,9 +3,10 @@ import { GameData } from "../common/game_data";
 import { GameUI } from "../common/game_ui";
 import * as fs from 'fs';
 import { getLogger } from "../../utils/logger";
-import { getAbsolutePath, getRandomElement, shuffleArray } from "../../utils/utility";
+import { getRandomElement, shuffleArray } from "../../utils/utility";
 import { ANSWER_SELECT_CHOICES, ANSWER_SELECT_MENU, ANSWER_TYPES } from "./answer_select_type";
 import { GameUser } from "../common/game_user";
+import { RESOURCE_CONFIG } from "../../config/resource_config";
 const logger = getLogger('SpyCheckData');
 
 export class Question
@@ -20,6 +21,13 @@ export class Question
     }
 }
 
+export enum GAME_RESULT_TYPE
+{
+  SPY_WIN,
+  CIVILIAN_WIN,
+  CONTINUE,
+}
+
 export class SpyCheckGameData extends GameData
 {
   static EXPLICIT_QUESTION_LIST: Array<Question> = SpyCheckGameData.loadExplicitQuestionList();
@@ -28,7 +36,7 @@ export class SpyCheckGameData extends GameData
   {
     const question_list =  Array<Question>();
 
-    const question_list_path = getAbsolutePath(process.env.SPYCHECK_QUESTION_LIST_PATH);
+    const question_list_path = RESOURCE_CONFIG.SPYCHECK_PATH + "question_list.json";
 
     if(fs.existsSync(question_list_path) === false)
     {
@@ -54,9 +62,8 @@ export class SpyCheckGameData extends GameData
     this.data_map.set('CUSTOM_QUESTION_UI_MAP', new Map<string, SpyCheckCustomQuestionUI>())
     this.data_map.set('QUESTION_LIST', Array<Question>());
     this.data_map.set('ANSWER_SELECT_MAP', new Map<string, string>());
-    this.data_map.set('VOTE_MAP', new Map<string, string>());
     this.data_map.set('CURRENT_QUESTION', null);
-    this.data_map.set('GAME_RESULT', 'NULL');
+    this.data_map.set('GAME_RESULT', GAME_RESULT_TYPE.CONTINUE);
     this.data_map.set('SPY_LIST_STRING', '');
   }
 
@@ -134,20 +141,7 @@ export class SpyCheckGameData extends GameData
   {
     if(answer_type === 4 && users) //참가자 선택 방식
     {
-      const user_select_comp = new ActionRowBuilder<StringSelectMenuBuilder>()
-      .addComponents(
-        new StringSelectMenuBuilder()
-        .setCustomId('answer_select')
-        .setPlaceholder('답변 선택')
-        .addOptions(
-            users.map(user => 
-            {
-              return new StringSelectMenuOptionBuilder().setLabel(user.getDisplayName()).setValue(user.getDisplayName());
-            })
-        )
-      );
-
-      return user_select_comp;
+      return this.getUserSelectComponents('answer_select', '답변 선택');
     }
 
     const comp =  ANSWER_SELECT_MENU.get(answer_type) ?? null;
@@ -198,40 +192,6 @@ export class SpyCheckGameData extends GameData
     return map.get(game_user.getId()) ?? null;
   }
 
-  addUserVoted(game_user: GameUser, value: string): number
-  {
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    map.set(game_user.getId(), value);
-
-    return map.size;
-  }
-
-  clearVoteMap()
-  {
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    map.clear();
-  }
-
-  getVoteMap(): Map<string, string>
-  {
-    return this.data_map.get('VOTE_MAP');
-  }
-
-  getVotedCount(game_user: GameUser): number
-  {
-    let voted_count = 0;
-    const map: Map<string, string> = this.data_map.get('VOTE_MAP');
-    for(const value of map.values())
-    {
-      if(value === game_user.getId())
-      {
-        ++voted_count;
-      }
-    }
-
-    return voted_count;
-  }
-
   setCurrentQuestion(question: Question)
   {
     this.data_map.set('CURRENT_QUESTION', question);
@@ -242,12 +202,12 @@ export class SpyCheckGameData extends GameData
     return this.data_map.get('CURRENT_QUESTION');
   }
 
-  setGameResult(result: string)
+  setGameResult(result: GAME_RESULT_TYPE)
   {
     this.data_map.set('GAME_RESULT', result);
   }
 
-  getGameResult(): string
+  getGameResult(): GAME_RESULT_TYPE
   {
     return this.data_map.get('GAME_RESULT');
   }

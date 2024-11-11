@@ -10,6 +10,13 @@ import { SpyCheckCycle } from "../spycheck_cycle";
 import { GameUser } from "../../common/game_user";
 const logger = getLogger('SpyCheckProcessRound');
 
+enum ROUND_STEP
+{
+  ANSWER,
+  VOTE,
+  VOTE_RESULT
+}
+
 export class ProcessRoundCycle extends SpyCheckCycle
 {
   private current_question: Question | null = null;
@@ -18,7 +25,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
   private round_num: number = 0;
 
-  private step = 0;
+  private step: ROUND_STEP = ROUND_STEP.ANSWER;
 
   constructor(game_core: SpyCheckCore)
   {
@@ -28,7 +35,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
   async enter(): Promise<boolean>
   {
     this.current_question = null;
-    this.step = 0;
+    this.step = ROUND_STEP.ANSWER;
     this.answer_timer_canceler = () => {};
     this.vote_timer_canceler = () => {};
 
@@ -87,7 +94,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       .setFooter({text: `${++this.round_num}번째 라운드에요.`});
 
       this.getGameSession().playBGM(BGM_TYPE.GRAND_FATHER_11_MONTH);
-   answer_select_alert_ui.startTimer(this.getGameSession(), '모두에게 질문지를 보냈어요.\n \n질문에 대한 적절한 답변을 선택해주세요!\n', answer_select_time * 1000);
+   answer_select_alert_ui.startTimer(this.getGameSession(), '모두에게 질문지를 보냈어요.\n \n질문에 대한 적절한 답변을 선택해주세요!\n', answer_select_time );
 
     const [answer_timer, answer_timer_cancel] = cancelableSleep(answer_select_time * 1000);
     this.answer_timer_canceler = answer_timer_cancel;
@@ -115,7 +122,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
       answer_show_ui.embed.addFields(
         {
           name: user.getDisplayName(),
-          value: selected_answer_value,
+          value: this.getGameData().getDisplayName(selected_answer_value) ?? selected_answer_value,
           inline: false,
         },
       )
@@ -129,17 +136,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
     .setTitle('📩 **[ 투표 ]**')
     .setFooter({text: '투표는 익명으로 진행돼요.'});
 
-    const vote_component = new ActionRowBuilder<StringSelectMenuBuilder>()
-    .addComponents(
-      new StringSelectMenuBuilder()
-      .setCustomId('vote')
-      .setPlaceholder(`의심스러운 플레이어 지목하기`)
-      .addOptions(
-        this.getGameData().getInGameUsers().map(user => {
-          return new StringSelectMenuOptionBuilder().setLabel(user.getDisplayName()).setValue(user.getId())
-        })
-      )
-    )
+    const vote_component = this.getGameData().getUserSelectComponents('vote', `의심스러운 플레이어 지목하기`);
 
     const vote_skip_component = new ActionRowBuilder<ButtonBuilder>()
     .addComponents(
@@ -153,9 +150,9 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
     this.getGameSession().playBGM(BGM_TYPE.PLING);
     const spy_guess_time = this.getGameCore().getGameOptions().getOption(SPYCHECK_OPTION.SPY_GUESS_TIME).getSelectedValueAsNumber();
-    vote_ui.startTimer(this.getGameSession(), '🔹 의심스러운 답변을 선택한 플레이어를 지목해주세요.\n', spy_guess_time * 1000);
+    vote_ui.startTimer(this.getGameSession(), '🔹 의심스러운 답변을 선택한 플레이어를 지목해주세요.\n', spy_guess_time);
 
-    this.step = 1;
+    this.step = ROUND_STEP.VOTE;
 
     const [vote_timer, vote_timer_cancel] = cancelableSleep(spy_guess_time * 1000);
     this.vote_timer_canceler = vote_timer_cancel;
@@ -163,7 +160,7 @@ export class ProcessRoundCycle extends SpyCheckCycle
 
     vote_ui.stopTimer();
 
-    this.step = 2;
+    this.step = ROUND_STEP.VOTE_RESULT;
 
     const vote_show_ui = new GameUI();
     vote_show_ui.embed
@@ -172,37 +169,30 @@ export class ProcessRoundCycle extends SpyCheckCycle
     .setDescription(`🔹 투표 결과:\n`)
 
     let most_voted_users: Array<GameUser> = [];
-    let most_voted_count = 0;
-    for(const game_user of this.getGameData().getInGameUsers())
+    for(const [voted_count, voted_users] of this.getGameData().makeVotedCountMap())
     {
-      const voted_count = this.getGameData().getVotedCount(game_user);
       if(voted_count === 0)
       {
         continue;
       }
 
-      if(voted_count >= most_voted_count)
+      if(most_voted_users.length === 0)
       {
-        if(voted_count === most_voted_count)
-        {
-          most_voted_users.push(game_user);
-        }
-        else //중복 아냐?
-        {
-          most_voted_users = [ game_user ]; //그럼 1명만으로 다시 등록
-        }
-
-        most_voted_count = voted_count;
+        most_voted_users = voted_users;
       }
 
-      vote_show_ui.embed.addFields(
-        {
-          name: game_user.getDisplayName(),
-          value: `${voted_count}표`,
-          inline: false,
-        },
-      )
+      for(const voted_user of voted_users)
+      {
+        vote_show_ui.embed.addFields(
+          {
+            name: voted_user.getDisplayName(),
+            value: `${voted_count}표`,
+            inline: false,
+          },
+        )
+      }
     }
+    
 
     this.getGameSession().sendUI(vote_show_ui);
 
@@ -284,12 +274,12 @@ export class ProcessRoundCycle extends SpyCheckCycle
       return;
     }
 
-    if(interaction.isStringSelectMenu() && interaction.customId === 'answer_select' && this.step === 0) //답변 선택함
+    if(interaction.isStringSelectMenu() && interaction.customId === 'answer_select' && this.step === ROUND_STEP.ANSWER) //답변 선택함
     {
       const selected_value = interaction.values[0];
       const select_map_size = this.getGameData().addUserAnswerSelect(game_user, selected_value);
 
-      if(select_map_size === this.getGameData().getInGameUsers().length
+      if(select_map_size === this.getGameData().getInGameUserCount()
         && this.answer_timer_canceler) //모두 선택했으면 바로 skip
       {
         this.answer_timer_canceler(); //타이머 중지
@@ -298,21 +288,21 @@ export class ProcessRoundCycle extends SpyCheckCycle
       }
 
       game_user.sendInteractionReply(interaction, {
-        content: `\`\`\`🔸 선택한 답변: ${selected_value}\`\`\``,
+        content: `\`\`\`🔸 선택한 답변: ${this.getGameData().getDisplayName(selected_value) ?? selected_value}\`\`\``,
         ephemeral: true
       })
   
       return;
     }
 
-    if(this.step === 1 &&
+    if(this.step === ROUND_STEP.VOTE &&
       (interaction.isStringSelectMenu() && interaction.customId === 'vote') || 
       (interaction.isButton() && interaction.customId === 'vote_skip')) //투표함
     {
       const selected_value = (interaction.isStringSelectMenu() && interaction.customId === 'vote') ? interaction.values[0] : '무투표';
       const select_map_size = this.getGameData().addUserVoted(game_user, selected_value);
 
-      if(select_map_size === this.getGameData().getInGameUsers().length
+      if(select_map_size === this.getGameData().getInGameUserCount()
         && this.vote_timer_canceler) //모두 선택했으면 바로 skip
       {
         this.vote_timer_canceler(); //타이머 중지

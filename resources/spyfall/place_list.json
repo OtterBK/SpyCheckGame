@@ -1,0 +1,890 @@
+{
+  "normal": 
+  [
+    {
+      "place": {
+          "name": "여객기",
+          "image": "LOCAL"
+      },
+      "roles": [
+          { "name": "기장", "image": "" },
+          { "name": "부기장", "image": "" },
+          { "name": "스튜어디스", "image": "" },
+          { "name": "잠이 많은 승객", "image": "" },
+          { "name": "일반석 승객", "image": "" },
+          { "name": "일등석 승객", "image": "" },
+          { "name": "우등석 승객", "image": "" },
+          { "name": "밀입국자", "image": "" },
+          { "name": "항공 보안 요원", "image": "" },
+          { "name": "정비공", "image": "" },
+          { "name": "시끄러운 아이", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "레스토랑",
+        "image": ""
+      },
+      "roles": [
+        { "name": "셰프", "image": "" },
+        { "name": "바텐더", "image": "" },
+        { "name": "웨이터", "image": "" },
+        { "name": "웨이트리스", "image": "" },
+        { "name": "수셰프", "image": "" },
+        { "name": "손님", "image": "" },
+        { "name": "음식 비평가", "image": "" },
+        { "name": "설거지 담당", "image": "" },
+        { "name": "진상손님", "image": "" },
+        { "name": "도어맨", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "은행",
+        "image": ""
+      },
+      "roles": [
+        { "name": "은행원", "image": "" },
+        { "name": "고객", "image": "" },
+        { "name": "지점장", "image": "" },
+        { "name": "컨설턴트", "image": "" },
+        { "name": "VIP 고객", "image": "" },
+        { "name": "금고 관리인", "image": "" },
+        { "name": "무장 강도", "image": "" },
+        { "name": "보안관", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "경찰서",
+        "image": ""
+      },
+      "roles": [
+        { "name": "경찰관", "image": "" },
+        { "name": "형사", "image": "" },
+        { "name": "경찰서장", "image": "" },
+        { "name": "주정뱅이", "image": "" },
+        { "name": "사기꾼", "image": "" },
+        { "name": "사기 피해자", "image": "" },
+        { "name": "기자", "image": "" },
+        { "name": "건달", "image": "" },
+        { "name": "변호사", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "해적선",
+        "image": ""
+      },
+      "roles": [
+        { "name": "허세부리는 선장", "image": "" },
+        { "name": "요리사", "image": "" },
+        { "name": "포수", "image": "" },
+        { "name": "부선장", "image": "" },
+        { "name": "항해사", "image": "" },
+        { "name": "하인", "image": "" },
+        { "name": "포로", "image": "" },
+        { "name": "크라켄", "image": "" },
+        { "name": "보물 경비원", "image": "" },
+        { "name": "갑판 청소부", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "편의점",
+        "image": ""
+      },
+      "roles": [
+        { "name": "알바생", "image": "" },
+        { "name": "손님", "image": "" },
+        { "name": "주정뱅이", "image": "" },
+        { "name": "노인", "image": "" },
+        { "name": "도둑", "image": "" },
+        { "name": "꼬맹이", "image": "" },
+        { "name": "유통기사", "image": "" },
+        { "name": "깡패", "image": "" },
+        { "name": "술 사는 미성년자", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "영화촬영장",
+        "image": ""
+      },
+      "roles": [
+        { "name": "감독", "image": "" },
+        { "name": "음향 담당", "image": "" },
+        { "name": "카메라맨", "image": "" },
+        { "name": "여배우", "image": "" },
+        { "name": "남배우", "image": "" },
+        { "name": "엑스트라", "image": "" },
+        { "name": "코디네이터", "image": "" },
+        { "name": "스턴트맨", "image": "" },
+        { "name": "조명 담당", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "지하철",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "임산부", "image": "" },
+        { "name": "노인", "image": "" },
+        { "name": "기관사", "image": "" },
+        { "name": "사이비", "image": "" },
+        { "name": "대학생", "image": "" },
+        { "name": "회사원", "image": "" },
+        { "name": "행상인", "image": "" },
+        { "name": "역무원", "image": "" },
+        { "name": "공익 요원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "유람선",
+        "image": ""
+      },
+      "roles": [
+        { "name": "선장", "image": "" },
+        { "name": "요리사", "image": "" },
+        { "name": "뮤지션", "image": "" },
+        { "name": "부자", "image": "" },
+        { "name": "바텐더", "image": "" },
+        { "name": "웨이터", "image": "" },
+        { "name": "셰프", "image": "" },
+        { "name": "승객", "image": "" },
+        { "name": "조타수", "image": "" },
+        { "name": "정비공", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "대학교",
+        "image": ""
+      },
+      "roles": [
+        { "name": "교수", "image": "" },
+        { "name": "재학생", "image": "" },
+        { "name": "대학원생", "image": "" },
+        { "name": "학생회장", "image": "" },
+        { "name": "조교", "image": "" },
+        { "name": "화석", "image": "" },
+        { "name": "신입생", "image": "" },
+        { "name": "총장", "image": "" },
+        { "name": "기숙사 사감", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "카지노",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "딜러", "image": "" },
+        { "name": "타짜", "image": "" },
+        { "name": "경비원", "image": "" },
+        { "name": "도박 중독자", "image": "" },
+        { "name": "전부 잃은 사람", "image": "" },
+        { "name": "카지노 매니저", "image": "" },
+        { "name": "호구", "image": "" },
+        { "name": "VIP 고객", "image": "" },
+        { "name": "바텐더", "image": "" },
+        { "name": "바람잡이", "image": "" },
+        { "name": "환전소 직원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "병원",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "병원장", "image": "" },
+        { "name": "내과 의사", "image": "" },
+        { "name": "외과 의사", "image": "" },
+        { "name": "간호사", "image": "" },
+        { "name": "인턴", "image": "" },
+        { "name": "입원 환자", "image": "" },
+        { "name": "보호자", "image": "" },
+        { "name": "약사", "image": "" },
+        { "name": "진료 접수원", "image": "" },
+        { "name": "보안 요원", "image": "" },
+        { "name": "의료기기 관리사", "image": "" },
+        { "name": "응급 환자", "image": "" },
+        { "name": "시체", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "호텔",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "접수원", "image": "" },
+        { "name": "호텔 매니저", "image": "" },
+        { "name": "룸서비스 직원", "image": "" },
+        { "name": "청소부", "image": "" },
+        { "name": "투숙객", "image": "" },
+        { "name": "외국인 투숙객", "image": "" },
+        { "name": "주방장", "image": "" },
+        { "name": "수영장 관리인", "image": "" },
+        { "name": "벨보이", "image": "" },
+        { "name": "주차장 관리 요원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "군대",
+        "image": ""
+      },
+      "roles": [
+        { "name": "이병", "image": "" },
+        { "name": "말년 병장", "image": "" },
+        { "name": "관심 병사", "image": "" },
+        { "name": "소대장", "image": "" },
+        { "name": "초병", "image": "" },
+        { "name": "면회객", "image": "" },
+        { "name": "행정 보급관", "image": "" },
+        { "name": "PX병", "image": "" },
+        { "name": "의무병", "image": "" },
+        { "name": "급양병", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "뮤지컬극장",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "감독", "image": "" },
+        { "name": "무대 설치 직원", "image": "" },
+        { "name": "유명 배우", "image": "" },
+        { "name": "악단 지휘자", "image": "" },
+        { "name": "좌석 안내원", "image": "" },
+        { "name": "관객", "image": "" },
+        { "name": "물품 보관소 안내원", "image": "" },
+        { "name": "티켓 판매원", "image": "" },
+        { "name": "메이크업 아티스트", "image": "" },
+        { "name": "프롬프터", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "화성우주기지",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "우주비행사", "image": "" },
+        { "name": "과학자", "image": "" },
+        { "name": "의료 담당자", "image": "" },
+        { "name": "외계인", "image": "" },
+        { "name": "통신 정비 담당자", "image": "" },
+        { "name": "우주 관광객", "image": "" },
+        { "name": "정비사", "image": "" },
+        { "name": "조종사", "image": "" },
+        { "name": "프로그래머", "image": "" },
+        { "name": "휴머노이드 로봇", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "놀이공원",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "포토그래퍼", "image": "" },
+        { "name": "놀이기구 운영자", "image": "" },
+        { "name": "노점상", "image": "" },
+        { "name": "커플 방문객(남)", "image": "" },
+        { "name": "커플 방문객(여)", "image": "" },
+        { "name": "안전 요원", "image": "" },
+        { "name": "마스코트", "image": "" },
+        { "name": "퍼레이드 댄서", "image": "" },
+        { "name": "푸드코트 직원", "image": "" },
+        { "name": "티켓 판매원", "image": "" },
+        { "name": "어린이", "image": "" },
+        { "name": "미아 보호소 직원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "미술관",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "큐레이터", "image": "" },
+        { "name": "전시 해설가", "image": "" },
+        { "name": "경비원", "image": "" },
+        { "name": "보존 전문가", "image": "" },
+        { "name": "관람객", "image": "" },
+        { "name": "갤러리 매니저", "image": "" },
+        { "name": "어린이 관람객", "image": "" },
+        { "name": "사진 작가", "image": "" },
+        { "name": "기념품 판매원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "대형마트",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "마트 매니저", "image": "" },
+        { "name": "계산원", "image": "" },
+        { "name": "소매치기", "image": "" },
+        { "name": "재고 관리인", "image": "" },
+        { "name": "고객", "image": "" },
+        { "name": "푸드코트 직원", "image": "" },
+        { "name": "주차 안내원", "image": "" },
+        { "name": "아이 돌보미", "image": "" },
+        { "name": "전자제품 판매원", "image": "" },
+        { "name": "식품 판매원", "image": "" },
+        { "name": "의류 판매원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "교회",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "목사", "image": "" },
+        { "name": "신부", "image": "" },
+        { "name": "성가대원", "image": "" },
+        { "name": "성가대 지휘자", "image": "" },
+        { "name": "교회 관리인", "image": "" },
+        { "name": "주일학교 교사", "image": "" },
+        { "name": "집사", "image": "" },
+        { "name": "신도", "image": "" },
+        { "name": "전도사", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "도심공원",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "산책하는 주민", "image": "" },
+        { "name": "피크닉족", "image": "" },
+        { "name": "자전거 대여 직원", "image": "" },
+        { "name": "아이스크림 트럭 사장", "image": "" },
+        { "name": "공원 경비원", "image": "" },
+        { "name": "조깅하는 사람", "image": "" },
+        { "name": "사진 작가", "image": "" },
+        { "name": "애견인", "image": "" },
+        { "name": "환경 미화원", "image": "" },
+        { "name": "야외 운동 강사", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "법원",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "판사", "image": "" },
+        { "name": "검사", "image": "" },
+        { "name": "변호사", "image": "" },
+        { "name": "법원 서기", "image": "" },
+        { "name": "배심원", "image": "" },
+        { "name": "경위", "image": "" },
+        { "name": "피고", "image": "" },
+        { "name": "원고", "image": "" },
+        { "name": "증인", "image": "" },
+        { "name": "법률 상담가", "image": "" },
+        { "name": "기자", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "차량정비소",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "정비소 매니저", "image": "" },
+        { "name": "차량 정비사", "image": "" },
+        { "name": "타이어 교체 전문가", "image": "" },
+        { "name": "엔진 전문가", "image": "" },
+        { "name": "도색 전문가", "image": "" },
+        { "name": "고객 응대 직원", "image": "" },
+        { "name": "부품 창고 관리자", "image": "" },
+        { "name": "차량 검사원", "image": "" },
+        { "name": "세차 전문가", "image": "" },
+        { "name": "정비 중인 차량 주인", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "회사",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "사장", "image": "" },
+        { "name": "비서", "image": "" },
+        { "name": "팀장", "image": "" },
+        { "name": "직원", "image": "" },
+        { "name": "IT 지원 담당", "image": "" },
+        { "name": "청소부", "image": "" },
+        { "name": "대표 이사", "image": "" },
+        { "name": "회계사", "image": "" },
+        { "name": "마케팅 팀원", "image": "" },
+        { "name": "인사 담당자", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "야외캠핑장",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "캠핑장 관리인", "image": "" },
+        { "name": "캠프파이어 진행자", "image": "" },
+        { "name": "텐트 설치 도우미", "image": "" },
+        { "name": "등산객", "image": "" },
+        { "name": "숲 해설가", "image": "" },
+        { "name": "야생 동물 감시자", "image": "" },
+        { "name": "바비큐 요리사", "image": "" },
+        { "name": "낚시꾼", "image": "" },
+        { "name": "아웃도어 장비 대여 직원", "image": "" },
+        { "name": "응급 처치 요원", "image": "LOCAL" }
+      ]
+    }
+  ],
+  "extend":
+  [
+    {
+      "place": {
+        "name": "십자군군대",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "붙잡힌 사라센인", "image": "" },
+        { "name": "하인", "image": "" },
+        { "name": "수도승", "image": "" },
+        { "name": "궁수", "image": "" },
+        { "name": "대지주", "image": "" },
+        { "name": "주교", "image": "" },
+        { "name": "기사", "image": "" },
+        { "name": "시민", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "국밥집",
+        "image": ""
+      },
+      "roles": [
+        { "name": "주방장", "image": "" },
+        { "name": "주방 보조", "image": "" },
+        { "name": "알바생", "image": "" },
+        { "name": "배달원", "image": "" },
+        { "name": "회사원", "image": "" },
+        { "name": "대학생", "image": "" },
+        { "name": "포장 손님", "image": "" },
+        { "name": "술 취한 아저씨", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "고속도로휴게소",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "주유소 직원", "image": "" },
+        { "name": "음식점 직원", "image": "" },
+        { "name": "휴게소 관리 직원", "image": "" },
+        { "name": "트럭 운전수", "image": "" },
+        { "name": "여행객", "image": "" },
+        { "name": "폭주족", "image": "" },
+        { "name": "지역 관광 안내원", "image": "" },
+        { "name": "커피숍 바리스타", "image": "" },
+        { "name": "화장실 청소 직원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "남극기지",
+        "image": ""
+      },
+      "roles": [
+        { "name": "연구소장", "image": "" },
+        { "name": "연구원", "image": "" },
+        { "name": "탐험 대장", "image": "" },
+        { "name": "기상학자", "image": "" },
+        { "name": "설인", "image": "" },
+        { "name": "펭귄", "image": "" },
+        { "name": "의료 담당", "image": "" },
+        { "name": "통신원", "image": "" },
+        { "name": "실험체 관리원", "image": "" },
+        { "name": "남극곰", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "중학교",
+        "image": ""
+      },
+      "roles": [
+        { "name": "교장 선생님", "image": "" },
+        { "name": "외국어 선생님", "image": "" },
+        { "name": "수학 선생님", "image": "" },
+        { "name": "국어 선생님", "image": "" },
+        { "name": "체육 선생님", "image": "" },
+        { "name": "중2병 학생", "image": "" },
+        { "name": "불량 학생", "image": "" },
+        { "name": "성실한 학생", "image": "" },
+        { "name": "급식 영양사", "image": "" },
+        { "name": "학부모", "image": "" },
+        { "name": "사서", "image": "" },
+        { "name": "학교 보안 요원", "image": "" },
+        { "name": "보건 선생님", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "바닷가",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "라이프가드", "image": "" },
+        { "name": "관광객", "image": "" },
+        { "name": "상인", "image": "" },
+        { "name": "모래성 건설자", "image": "" },
+        { "name": "서퍼", "image": "" },
+        { "name": "낚시꾼", "image": "" },
+        { "name": "해녀", "image": "" },
+        { "name": "변태", "image": "" },
+        { "name": "아이스크림 판매원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "클럽",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "가드", "image": "" },
+        { "name": "DJ", "image": "" },
+        { "name": "주정뱅이", "image": "" },
+        { "name": "호객꾼", "image": "" },
+        { "name": "바텐더", "image": "" },
+        { "name": "춤꾼", "image": "" },
+        { "name": "손님", "image": "" },
+        { "name": "입구컷 당한 사람", "image": "" },
+        { "name": "클럽 직원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "광산",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "신입 광부", "image": "" },
+        { "name": "광부", "image": "" },
+        { "name": "광산 주인", "image": "" },
+        { "name": "광부 팀장", "image": "" },
+        { "name": "도굴꾼", "image": "" },
+        { "name": "안전 요원", "image": "" },
+        { "name": "가스 검사관", "image": "" },
+        { "name": "박쥐", "image": "" },
+        { "name": "의료진", "image": "" },
+        { "name": "폭발물 관리자", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "카페",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "바리스타", "image": "" },
+        { "name": "단골 손님", "image": "" },
+        { "name": "싸우는 커플(여)", "image": "" },
+        { "name": "싸우는 커플(남)", "image": "" },
+        { "name": "진상 손님", "image": "" },
+        { "name": "카페에서 공부하는 대학생", "image": "" },
+        { "name": "카페에서 일하는 회사원", "image": "" },
+        { "name": "손님", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "농장",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "농부", "image": "" },
+        { "name": "농장 관리자", "image": "" },
+        { "name": "트랙터 운전사", "image": "" },
+        { "name": "수확 인부", "image": "" },
+        { "name": "동물 사육사", "image": "" },
+        { "name": "농장 청소원", "image": "" },
+        { "name": "마켓 판매자", "image": "" },
+        { "name": "운송 담당자", "image": "" },
+        { "name": "농장 견학 가이드", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "동물원",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "동물 사육사", "image": "" },
+        { "name": "동물원 청소부", "image": "" },
+        { "name": "동물원 경비원", "image": "" },
+        { "name": "투어 가이드", "image": "" },
+        { "name": "티켓 판매원", "image": "" },
+        { "name": "홍보 담당", "image": "" },
+        { "name": "수의사", "image": "" },
+        { "name": "기념품 판매원", "image": "" },
+        { "name": "사자", "image": "" },
+        { "name": "판다", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "서커스텐트",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "광대", "image": "" },
+        { "name": "똑똑한 원숭이", "image": "" },
+        { "name": "서커스 감독", "image": "" },
+        { "name": "서커스 단원", "image": "" },
+        { "name": "마술사", "image": "" },
+        { "name": "조련사", "image": "" },
+        { "name": "저글러", "image": "" },
+        { "name": "관객", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "유흥가",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "마담", "image": "" },
+        { "name": "바텐더", "image": "" },
+        { "name": "스트리퍼", "image": "" },
+        { "name": "마약쟁이", "image": "" },
+        { "name": "위장경찰", "image": "" },
+        { "name": "회사원", "image": "" },
+        { "name": "건달", "image": "" },
+        { "name": "호객꾼", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "절",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "주지 스님", "image": "" },
+        { "name": "승려", "image": "" },
+        { "name": "템플 스테이 수행자", "image": "" },
+        { "name": "보살님", "image": "" },
+        { "name": "요리 담당 스님", "image": "" },
+        { "name": "참배객", "image": "" },
+        { "name": "자원봉사자", "image": "" },
+        { "name": "절에 사는 개", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "도서관",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "사서", "image": "" },
+        { "name": "도서관장", "image": "" },
+        { "name": "책 정리 담당", "image": "" },
+        { "name": "조용한 독서가", "image": "" },
+        { "name": "도서관 경비원", "image": "" },
+        { "name": "학생", "image": "" },
+        { "name": "잠든 이용객", "image": "" },
+        { "name": "자료조사 기자", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "애견카페",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "매니저", "image": "" },
+        { "name": "바리스타", "image": "" },
+        { "name": "손님", "image": "" },
+        { "name": "강아지 돌보미", "image": "" },
+        { "name": "청소 담당", "image": "" },
+        { "name": "영양사", "image": "" },
+        { "name": "수의사", "image": "" },
+        { "name": "강아지 애호가", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "해양연구소",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "해양 생물학자", "image": "" },
+        { "name": "해양 지질학자", "image": "" },
+        { "name": "잠수부", "image": "" },
+        { "name": "기술 엔지니어", "image": "" },
+        { "name": "연구실 관리자", "image": "" },
+        { "name": "수질 분석가", "image": "" },
+        { "name": "데이터 분석가", "image": "" },
+        { "name": "탐사 보트 조종사", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "야구경기장",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "타자", "image": "" },
+        { "name": "투수", "image": "" },
+        { "name": "코치", "image": "" },
+        { "name": "심판", "image": "" },
+        { "name": "응원단", "image": "" },
+        { "name": "관중", "image": "" },
+        { "name": "열혈 관중", "image": "" },
+        { "name": "음식 판매원", "image": "" },
+        { "name": "해설자", "image": "" },
+        { "name": "팀 마스코트", "image": "" }
+      ]
+    },
+    {
+      "place": {
+        "name": "PC방",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "알바생", "image": "" },
+        { "name": "게임 중인 중학생", "image": "" },
+        { "name": "프로게이머 지망생", "image": "" },
+        { "name": "과제 중인 대학생", "image": "" },
+        { "name": "PC방 점주", "image": "" },
+        { "name": "식사 중인 직장인", "image": "" },
+        { "name": "인터넷 방송 BJ", "image": "" },
+        { "name": "PC 수리기사", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "공항",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "파일럿", "image": "" },
+        { "name": "승무원", "image": "" },
+        { "name": "보안 검색 요원", "image": "" },
+        { "name": "항공 교통 관제사", "image": "" },
+        { "name": "수하물 처리 직원", "image": "" },
+        { "name": "입국 심사관", "image": "" },
+        { "name": "항공사 카운터 직원", "image": "" },
+        { "name": "환전소 직원", "image": "" },
+        { "name": "면세점 직원", "image": "" },
+        { "name": "여행객", "image": "" },
+        { "name": "여권 잃어버린 여행객", "image": "" },
+        { "name": "밀입국자", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "경마장",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "경주 기수", "image": "" },
+        { "name": "마주", "image": "" },
+        { "name": "도박 중독자", "image": "" },
+        { "name": "경마장 아나운서", "image": "" },
+        { "name": "베팅 창구 직원", "image": "" },
+        { "name": "말 관리사", "image": "" },
+        { "name": "관람객", "image": "" },
+        { "name": "경비원", "image": "" },
+        { "name": "경마 해설자", "image": "" },
+        { "name": "경주마", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "기차역",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "기관사", "image": "" },
+        { "name": "승무원", "image": "" },
+        { "name": "매표소 직원", "image": "" },
+        { "name": "역장", "image": "" },
+        { "name": "안내 방송 요원", "image": "" },
+        { "name": "경비원", "image": "" },
+        { "name": "기차 청소부", "image": "" },
+        { "name": "수화물 운반인", "image": "" },
+        { "name": "택시 기사", "image": "" },
+        { "name": "승객", "image": "" },
+        { "name": "상점 직원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "소방서",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "소방관", "image": "" },
+        { "name": "소방서장", "image": "" },
+        { "name": "구급대원", "image": "" },
+        { "name": "구조대원", "image": "" },
+        { "name": "소방차 운전사", "image": "" },
+        { "name": "방화복 정비사", "image": "" },
+        { "name": "교육 담당 소방관", "image": "" },
+        { "name": "응급상황 디스패처", "image": "" },
+        { "name": "소방 훈련 강사", "image": "" },
+        { "name": "행정 직원", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "아쿠아리움",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "해양생물학자", "image": "" },
+        { "name": "다이버", "image": "" },
+        { "name": "아쿠아리움 안내원", "image": "" },
+        { "name": "기념품 판매원", "image": "" },
+        { "name": "해설사", "image": "" },
+        { "name": "수조 청소부", "image": "" },
+        { "name": "돌고래", "image": "" },
+        { "name": "안전 요원", "image": "" },
+        { "name": "수질 검사원", "image": "" },
+        { "name": "마스코트", "image": "LOCAL" }
+      ]
+    },
+    {
+      "place": {
+        "name": "보건소",
+        "image": "LOCAL"
+      },
+      "roles": [
+        { "name": "보건소 의사", "image": "" },
+        { "name": "간호사", "image": "" },
+        { "name": "예방 접종 담당자", "image": "" },
+        { "name": "영양사", "image": "" },
+        { "name": "방문 시민", "image": "" },
+        { "name": "방역 담당자", "image": "" },
+        { "name": "물리치료사", "image": "" },
+        { "name": "정신건강 상담사", "image": "" },
+        { "name": "행정 직원", "image": "LOCAL" }
+      ]
+    }
+  ]
+}
+  

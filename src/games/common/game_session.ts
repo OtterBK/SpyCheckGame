@@ -4,10 +4,11 @@ import { GameTable } from "./game_table";
 import { GameCore } from "./game_core";
 import { GameUI } from "./game_ui";
 import { getLogger } from "../../utils/logger";
-import { generateUUID, getAbsolutePath } from "../../utils/utility";
+import { generateUUID, } from "../../utils/utility";
 import { BGM_TYPE } from "../../managers/bgm_manager";
 import { existsSync } from "fs";
 import { GameUser } from "./game_user";
+import { RESOURCE_CONFIG } from "../../config/resource_config";
 const logger = getLogger('GameSession');
 
 export class GameSession
@@ -142,20 +143,15 @@ export class GameSession
     });
   }
 
-  sendUI(ui: GameUI): void
+
+  async sendUI(ui: GameUI): Promise<void>
   {
-    for(const table of this.tables)
-    {
-      table.sendUI(ui);
-    }
+    return Promise.all(this.tables.map(table => table.sendUI(ui))).then(() => {});
   }
 
-  editUI(ui: GameUI): void
+  async editUI(ui: GameUI): Promise<void>
   {
-    for(const table of this.tables)
-    {
-      table.editUI(ui);
-    }
+    return Promise.all(this.tables.map(table => table.editUI(ui))).then(() => {});
   }
 
   deleteUI(): void
@@ -181,7 +177,7 @@ export class GameSession
       return;
     }
 
-    const bgm_resource_path = getAbsolutePath(process.env.BGM_PATH); 
+    const bgm_resource_path = RESOURCE_CONFIG.BGM_PATH; 
     const bgm_file_path = bgm_resource_path + "/" + bgm_type;
 
     if(existsSync(bgm_file_path) === false)
@@ -210,6 +206,26 @@ export class GameSession
     this.audio_player.stop();
   }
 
+  pauseAudio(): void
+  {
+    if(!this.audio_player) 
+    {
+      return;
+    }
+
+    this.audio_player.pause();
+  }
+
+  unpauseAudio(): void
+  {
+    if(!this.audio_player) 
+    {
+      return;
+    }
+
+    this.audio_player.unpause();
+  }
+
   relayInteraction(interaction: Interaction): void
   {
     // if(this.game_core?.isInGame() === false && this.isParticipant(interaction.user.id) === false) 
@@ -231,6 +247,12 @@ export class GameSession
     }
   }
 
+  forceStop(reason: string)
+  {
+    logger.info(`Force stopping game session. host id: ${this.host?.id}. reason: ${reason}`);
+    this.expire();
+  }
+
   expire(): void
   {
     logger.info(`Expiring game session. host id: ${this.host?.id}`);
@@ -248,6 +270,7 @@ export class GameSession
     this.participants = [];
 
     this.game_core?.expire();
+    this.game_core?.getGameData().expire();
     this.game_core = null;
 
     GameSession.GAME_SESSIONS.delete(this.uuid);

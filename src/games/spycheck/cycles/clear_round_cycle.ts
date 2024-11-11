@@ -6,6 +6,7 @@ import { sleep } from "../../../utils/utility";
 import { getLogger } from "../../../utils/logger";
 import { BGM_TYPE } from "../../../managers/bgm_manager";
 import { SpyCheckCycle } from "../spycheck_cycle";
+import { GAME_RESULT_TYPE } from "../spycheck_data";
 const logger = getLogger('SpyCheckClearRound');
 
 export class ClearRoundCycle extends SpyCheckCycle
@@ -17,6 +18,8 @@ export class ClearRoundCycle extends SpyCheckCycle
 
   async enter(): Promise<boolean>
   {
+    this.getGameData().setGameResult(GAME_RESULT_TYPE.CONTINUE); //우선 CONTINUE 넣음
+
     let spy_count = 0;
     for(const user of this.getGameData().getInGameUsers())
     {
@@ -28,7 +31,7 @@ export class ClearRoundCycle extends SpyCheckCycle
 
     if(spy_count === 0) //스파이가 이제 없다면
     {
-      this.getGameData().setGameResult('SPY_LOSE');
+      this.getGameData().setGameResult(GAME_RESULT_TYPE.CIVILIAN_WIN);
 
       const reason_ui = new GameUI();
       reason_ui.embed
@@ -40,9 +43,9 @@ export class ClearRoundCycle extends SpyCheckCycle
 
       this.getGameSession().playBGM(BGM_TYPE.SCORE_ALARM);
     }
-    else if(spy_count >= this.getGameData().getInGameUsers().length / 2) //스파이가 과반수 이상이면
+    else if(spy_count >= this.getGameData().getInGameUserCount() / 2) //스파이가 과반수 이상이면
     {
-      this.getGameData().setGameResult('SPY_WIN');
+      this.getGameData().setGameResult(GAME_RESULT_TYPE.SPY_WIN);
 
       const reason_ui = new GameUI();
       reason_ui.embed
@@ -55,7 +58,7 @@ export class ClearRoundCycle extends SpyCheckCycle
     }
     else if(this.getGameData().getQuestionList().length === 0) //낼 질문이 없다면
     {
-      this.getGameData().setGameResult('SPY_WIN');
+      this.getGameData().setGameResult(GAME_RESULT_TYPE.SPY_WIN);
 
       const reason_ui = new GameUI();
       reason_ui.embed
@@ -74,7 +77,7 @@ export class ClearRoundCycle extends SpyCheckCycle
 
   async act(): Promise<boolean> 
   {
-    if(this.getGameData().getGameResult() === 'NULL') //게임 아직 안끝났다면
+    if(this.getGameData().getGameResult() === GAME_RESULT_TYPE.CONTINUE) //게임 아직 안끝났다면
     {
       this.setNextCycleType(CycleType.PREPARE_ROUND); //다시 라운드 진행
       return true;

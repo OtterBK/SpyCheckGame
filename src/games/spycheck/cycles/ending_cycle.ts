@@ -5,6 +5,7 @@ import { sleep } from "../../../utils/utility";
 import { getLogger } from "../../../utils/logger";
 import { BGM_TYPE } from "../../../managers/bgm_manager";
 import { SpyCheckCycle } from "../spycheck_cycle";
+import { GAME_RESULT_TYPE } from "../spycheck_data";
 const logger = getLogger('SpyCheckEnding');
 
 export class EndingCycle extends SpyCheckCycle
@@ -21,13 +22,11 @@ export class EndingCycle extends SpyCheckCycle
   async act(): Promise<boolean> 
   {
     const game_result = this.getGameData().getGameResult();
-    if(game_result === 'NULL')
+    if(game_result === GAME_RESULT_TYPE.CONTINUE)
     {
       logger.error("No Game Result in ending cycle")
       return false;
     }
-
-    const spy_win = game_result === 'SPY_WIN' ? true : false;
 
     const spy_list = this.getGameData().getSpyListString();
 
@@ -37,7 +36,7 @@ export class EndingCycle extends SpyCheckCycle
     .setTitle('결과')
     .setDescription(`스파이 명단:\n${spy_list}`)
 
-    if(spy_win)
+    if(game_result === GAME_RESULT_TYPE.SPY_WIN)
     {
       ending_ui.embed
       .setTitle('🐱‍👤 **[ 스파이팀 승리! ]**')

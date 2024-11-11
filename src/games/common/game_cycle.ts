@@ -6,6 +6,7 @@ import { GameSession } from "./game_session";
 import { saveGameOptionsToCache } from "../factory";
 import { deleteMessage } from "../../utils/utility";
 import { BGM_TYPE } from "../../managers/bgm_manager";
+import { GameUser } from "./game_user";
 const logger = getLogger('GameCycle');
 
 export enum CycleType
@@ -24,6 +25,8 @@ export abstract class GameCycle
   private game_core: GameCore;
   private cycle_name: string;
   private next_cycle_type: CycleType | null = null;
+
+  private expired: boolean = false;
 
   constructor(game_core: GameCore, cycle_name: string)
   {
@@ -57,6 +60,16 @@ export abstract class GameCycle
     return this.game_core.getGameSession();
   }
 
+  expire(): void
+  {
+    this.expired = true;
+  }
+
+  isExpired(): boolean
+  {
+    return this.expired;
+  }
+
   abstract enter(): Promise<boolean>;
   abstract act(): Promise<boolean>;
   abstract exit(): Promise<boolean>;
@@ -65,9 +78,7 @@ export abstract class GameCycle
 
 export abstract class LobbyCycleTemplate extends GameCycle
 {
-  private ui: GameUI = new GameUI();
-  private game_title: string = '';
-  private game_thumbnail: string = '';
+  private lobby_ui: GameUI = new GameUI();
 
   constructor(game_core: GameCore, cycle_name: string)
   {
@@ -76,10 +87,10 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
   async enter(): Promise<boolean> 
   {
-    this.ui.embed
+    this.lobby_ui.embed
       .setColor(0x87CEEB)
-      .setTitle(`**🎮 [ ${this.game_title} ]**`)
-      .setThumbnail(`${this.game_thumbnail}`)
+      .setTitle(`**🎮 [ ${this.getGameCore().getGameName()} ]**`)
+      .setThumbnail(`${this.getGameCore().getGameThumbnail()}`)
       .setFooter({
         text: `주최자: ${this.getGameSession().getHost()?.displayName}`,
         iconURL: `${this.getGameSession().getHost()?.displayAvatarURL()}`
@@ -98,8 +109,8 @@ export abstract class LobbyCycleTemplate extends GameCycle
         new ButtonBuilder().setCustomId('setting').setLabel('설정').setStyle(ButtonStyle.Secondary),
       );
 
-    this.ui.components.push(lobby_participant_btn);
-    this.ui.components.push(lobby_host_btn);
+    this.lobby_ui.components.push(lobby_participant_btn);
+    this.lobby_ui.components.push(lobby_host_btn);
 
     //game option select menu
 
@@ -111,7 +122,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
   async act(): Promise<boolean>  
   {
     this.refreshUI();
-    this.getGameSession().sendUI(this.ui);
+    this.getGameSession().sendUI(this.lobby_ui);
     return false; //Lobby Cycle은 'start' 눌렀을 때만 명시적으로 다음 cycle로 간다.
   }
 
@@ -169,21 +180,21 @@ export abstract class LobbyCycleTemplate extends GameCycle
     const game_user = this.getGameSession().findUser(member.id);
     if(game_user)
     {
-      game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 이미 ${this.game_title} 게임에 참가 중이에요.\`\`\``, ephemeral: true });
+      game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 이미 ${this.getGameCore().getGameName()} 게임에 참가 중이에요.\`\`\``, ephemeral: true });
       return;
     }
 
     const players_count = this.getGameSession().getParticipants.length;
     if(players_count >= this.getGameCore().getMaxPlayers())
     {
-      interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임은 최대 ${this.getGameCore().getMaxPlayers()}명까지만 할 수 있어요.\`\`\``, ephemeral: true });
+      interaction.reply({ content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임은 최대 ${this.getGameCore().getMaxPlayers()}명까지만 할 수 있어요.\`\`\``, ephemeral: true });
       return;
     }
 
     const new_game_user = this.getGameSession().addParticipant(member);
     this.refreshUI();
-    this.getGameSession().editUI(this.ui);
-    new_game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.game_title} 게임에 참가했어요.\`\`\``, ephemeral: true });
+    this.getGameSession().editUI(this.lobby_ui);
+    new_game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임에 참가했어요.\`\`\``, ephemeral: true });
 
     this.getGameSession().playBGM(BGM_TYPE.JOIN);
   }
@@ -192,7 +203,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
   {
     if(!this.getGameSession().findUser(member.id))
     {
-      interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임에 참가 중이지 않네요.\`\`\``, ephemeral: true });
+      interaction.reply({ content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임에 참가 중이지 않네요.\`\`\``, ephemeral: true });
       return;
     }
 
@@ -206,8 +217,8 @@ export abstract class LobbyCycleTemplate extends GameCycle
 
     this.getGameSession().removeParticipant(member.id);
     this.refreshUI();
-    this.getGameSession().editUI(this.ui);
-    interaction.reply({ content: `\`\`\`🔸 ${this.game_title} 게임에서 떠났어요.\`\`\``, ephemeral: true });
+    this.getGameSession().editUI(this.lobby_ui);
+    interaction.reply({ content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임에서 떠났어요.\`\`\``, ephemeral: true });
   }
 
   private handleRuleBook(interaction: RepliableInteraction)
@@ -215,11 +226,11 @@ export abstract class LobbyCycleTemplate extends GameCycle
     const game_user = this.getGameSession().findUser(interaction.user.id);
     if(game_user)
     {
-      game_user.sendInteractionReply(interaction, { content: `${this.getGameRuleDescription()}`, ephemeral: true });
+      game_user.sendInteractionReply(interaction, { content: `${this.getGameCore().getGameDescription()}`, ephemeral: true });
     }
     else
     {
-      interaction.reply({ content: `${this.getGameRuleDescription()}`, ephemeral: true });
+      interaction.reply({ content: `${this.getGameCore().getGameDescription()}`, ephemeral: true });
     }
   }
 
@@ -243,20 +254,25 @@ export abstract class LobbyCycleTemplate extends GameCycle
     const players_count = this.getGameSession().getParticipants().length;
     if(players_count < this.getGameCore().getMinPlayers())
     {
-       game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.game_title} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
+      game_user.sendInteractionReply(interaction, { content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임을 시작하려면 적어도 ${this.getGameCore().getMinPlayers()}명이 필요해요. 😥\`\`\``, ephemeral: true });
       return;
     }
 
     if(players_count > this.getGameCore().getMaxPlayers())
     {
        game_user.sendInteractionReply(interaction, {
-        content: `\`\`\`🔸 ${this.game_title} 게임은 최대 ${this.getGameCore().getMaxPlayers()}명까지만 할 수 있어요.\n🔸 애초에 참가가 안될텐데 어떻게 하신거죠? 이 경우엔 게임을 다시 시작해야해요... 😥\`\`\``,
+        content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임은 최대 ${this.getGameCore().getMaxPlayers()}명까지만 할 수 있어요.\n🔸 애초에 참가가 안될텐데 어떻게 하신거죠? 이 경우엔 게임을 다시 시작해야해요... 😥\`\`\``,
         ephemeral: true
       });
       return;
     }
 
-    this.getGameSession().sendMessage(`\`\`\`🔸 ${this.game_title} 게임을 시작할게요! 🙂\`\`\``);
+    if(this.checkCanStartGame(game_user, interaction) === false)
+    {
+      return;
+    }
+
+    this.getGameSession().sendMessage(`\`\`\`🔸 ${this.getGameCore().getGameName()} 게임을 시작할게요! 🙂\`\`\``);
 
     game_user.sendInteractionReply(interaction, {
       content: `\`\`\`🔸 게임을 시작했어요.\`\`\``,
@@ -286,7 +302,7 @@ export abstract class LobbyCycleTemplate extends GameCycle
     if(game_options.getOptions().length === 0)
     {
       game_user.sendInteractionReply(interaction, {
-        content: `\`\`\`🔸 ${this.game_title} 게임은 설정할 수 있는 항목이 없어요.\`\`\``,
+        content: `\`\`\`🔸 ${this.getGameCore().getGameName()} 게임은 설정할 수 있는 항목이 없어요.\`\`\``,
         ephemeral: true
       });
       return;
@@ -385,18 +401,8 @@ export abstract class LobbyCycleTemplate extends GameCycle
     }
     participants_status += `\`\`\``;
 
-    this.ui.embed.setDescription(participants_status);
+    this.lobby_ui.embed.setDescription(participants_status);
   }
 
-  public setGameTitle(title: string)
-  {
-    this.game_title = title;
-  }
-
-  public setGameThumbnail(thumbnail: string)
-  {
-    this.game_thumbnail = thumbnail;
-  }
-
-  protected abstract getGameRuleDescription(): string;
+  protected abstract checkCanStartGame(game_user: GameUser, interaction: RepliableInteraction): boolean;
 }

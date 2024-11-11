@@ -11,19 +11,14 @@ import { LobbyCycle } from "./cycles/lobby_cycle";
 import { PrepareRoundCycle } from "./cycles/prepare_round_cycle";
 import { ProcessRoundCycle } from "./cycles/process_round_cycle";
 import { StartCycle } from "./cycles/start_cycle";
+import { GameInfo } from "../common/game_info";
 const logger = getLogger('SpyCheckCore');
 
 export class SpyCheckCore extends GameCore
 {
-  constructor()
+  constructor(game_info: GameInfo)
   {
-    super();
-
-    this.game_id = 'SPYCHECK';
-    this.game_name = '스파이체크';
-
-    this.min_players = 4;
-    this.max_players = 9;
+    super(game_info);
 
     this.game_data = new SpyCheckGameData();
   }
@@ -32,9 +27,11 @@ export class SpyCheckCore extends GameCore
   {
     if(!this.getGameSession())
     {
-      logger.info(`Cannot start game ${this.game_id} core. game session is null`);
+      logger.error(`Cannot start game ${this.game_id} core. game session is null`);
       return;
     }
+    
+    logger.info(`start ${this.game_id} from game core`);
 
     this.initializeGameOptions();
     this.initializeCycle(); //initialize chain
@@ -103,21 +100,21 @@ export class SpyCheckCore extends GameCore
 
     this.game_options.addOption(
       new GameOption('토론 시간', SPYCHECK_OPTION.SPY_GUESS_TIME, '스파이가 누구인지 추측할 토론 시간을 설정합니다.')
-        .addChoice(new OptionChoice('30초', '30', '스파이 추측을 위한 토론 시간을 30초 제공합니다.'))
-        .addChoice(new OptionChoice('40초', '40', '스파이 추측을 위한 토론 시간을 40초 제공합니다.'))
-        .addChoice(new OptionChoice('50초', '50', '스파이 추측을 위한 토론 시간을 50초 제공합니다.'))
-        .addChoice(new OptionChoice('60초', '60', '스파이 추측을 위한 토론 시간을 60초 제공합니다.'))
-        .addChoice(new OptionChoice('70초', '70', '스파이 추측을 위한 토론 시간을 70초 제공합니다.'))
-        .addChoice(new OptionChoice('80초', '80', '스파이 추측을 위한 토론 시간을 80초 제공합니다.'))
-        .addChoice(new OptionChoice('90초', '90', '스파이 추측을 위한 토론 시간을 90초 제공합니다.'))
-        .addChoice(new OptionChoice('100초', '100', '스파이 추측을 위한 토론 시간을 100초 제공합니다.'))
-        .addChoice(new OptionChoice('110초', '110', '스파이 추측을 위한 토론 시간을 110초 제공합니다.'))
-        .addChoice(new OptionChoice('120초', '120', '스파이 추측을 위한 토론 시간을 120초 제공합니다.'))
+        .addChoice(new OptionChoice('30초', '30', '스파이 색출을 위한 토론 시간을 30초 제공합니다.'))
+        .addChoice(new OptionChoice('40초', '40', '스파이 색출을 위한 토론 시간을 40초 제공합니다.'))
+        .addChoice(new OptionChoice('50초', '50', '스파이 색출을 위한 토론 시간을 50초 제공합니다.'))
+        .addChoice(new OptionChoice('60초', '60', '스파이 색출을 위한 토론 시간을 60초 제공합니다.'))
+        .addChoice(new OptionChoice('70초', '70', '스파이 색출을 위한 토론 시간을 70초 제공합니다.'))
+        .addChoice(new OptionChoice('80초', '80', '스파이 색출을 위한 토론 시간을 80초 제공합니다.'))
+        .addChoice(new OptionChoice('90초', '90', '스파이 색출을 위한 토론 시간을 90초 제공합니다.'))
+        .addChoice(new OptionChoice('100초', '100', '스파이 색출을 위한 토론 시간을 100초 제공합니다.'))
+        .addChoice(new OptionChoice('110초', '110', '스파이 색출을 위한 토론 시간을 110초 제공합니다.'))
+        .addChoice(new OptionChoice('120초', '120', '스파이 색출을 위한 토론 시간을 120초 제공합니다.'))
         .selectChoice('70')
     );
 
     this.game_options.addOption(
-      new GameOption('스파이 수', SPYCHECK_OPTION.SPY_COUNT, '게임에서 사용할 스파이의 인원 수를 설정합니다.')
+      new GameOption('스파이 수', SPYCHECK_OPTION.SPY_COUNT, '게임에서 사용할 스파이의 수를 설정합니다.')
         .addChoice(new OptionChoice('1명', '1', '스파이 수를 1명으로 설정합니다.'))
         .addChoice(new OptionChoice('2명', '2', '스파이 수를 2명으로 설정합니다.'))
         .addChoice(new OptionChoice('3명', '3', '스파이 수를 3명으로 설정합니다.'))
