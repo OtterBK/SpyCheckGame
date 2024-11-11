@@ -18,7 +18,7 @@ const client = new Client({
 client.once('ready', async () => 
 {
   // 명령어 등록 함수 호출
-  registerCommands();
+  // registerCommands();
   registerGlobalCommands();
 
   logger.info('Board game bot is ready!');

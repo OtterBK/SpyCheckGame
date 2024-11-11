@@ -5,6 +5,8 @@ import 'dotenv/config';
 import { getLogger } from '../utils/logger';
 import checkPermission from '../utils/permission_checker';
 import { createGameLobby, createGameSelectMenu, getGameTable } from '../games/factory';
+import { RESOURCE_CONFIG } from '../config/resource_config';
+import * as fs from 'fs';
 const logger = getLogger('CommandManager');
 
 const commands = [
@@ -26,13 +28,22 @@ const commands = [
     .setName('강제종료')
     .setDescription('게임 세션을 강제 정리합니다.'),
 
-    new SlashCommandBuilder()
+  new SlashCommandBuilder()
     .setName('새로고침')
     .setDescription('개인 화면을 갱신합니다.'),
 
-    new SlashCommandBuilder()
+  new SlashCommandBuilder()
     .setName('음성재연결')
-    .setDescription('봇의 음성 채널 연결을 재시도합니다.')
+    .setDescription('봇의 음성 채널 연결을 재시도합니다.'),
+
+  new SlashCommandBuilder()
+    .setName('의견')
+    .setDescription('의견을 제출합니다.')
+    .addStringOption(option => 
+      option.setName('내용')
+      .setDescription('제출할 의견의 내용을 입력해주세요.')
+      .setRequired(true)
+    )
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN as string);
@@ -92,6 +103,13 @@ export function handleCommand(command_name: string, interaction: ChatInputComman
 
 command_handlers.set('보드게임', (interaction: ChatInputCommandInteraction) =>
 {
+  if(interaction.channel?.isSendable())
+  {
+    interaction.channel.send({
+      content: `\`\`\`🔹 보드게임 봇의 베타테스트에 참여해주셔서 감사합니다!\n🔹 봇 이용 중 버그나 의견이 있으시면 '/의견' 명령어로 알려주세요.\`\`\``
+    });
+  }
+
   const game_id = interaction.options.getString('게임이름') ?? '';
   if(game_id === '')
   {
@@ -212,3 +230,27 @@ command_handlers.set('음성재연결', async (interaction: ChatInputCommandInte
     return;
   }
 );
+
+command_handlers.set('의견', (interaction: ChatInputCommandInteraction) =>
+  {
+    const opinion = interaction.options.getString('내용');
+
+    interaction.reply(
+      {
+        content: `\`\`\`🔸 접수되었습니다. 소중한 의견 감사합니다.\`\`\``,
+        ephemeral: true
+      }
+    )
+
+    const opinion_format = `* ${interaction.user.displayName}[${interaction.user.id}]: ${opinion}\n\n`;
+
+    const feedback_box = RESOURCE_CONFIG.FEEDBACK_PATH;
+    fs.appendFile(feedback_box, opinion_format, (err) => 
+    {
+      if(err)
+      {
+        logger.error(`Cannot accept feedback by ${err.message}. opinion: ${opinion_format}.`);
+      }
+    });
+
+  });

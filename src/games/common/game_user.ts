@@ -105,6 +105,8 @@ export class GameUser
         })
         .catch(err => {
             logger.error(`Cannot send private ui err: ${err.message}. user_id: ${this.getId()}`);
+            this.sendDirectMessage(`\`\`\`🔸 개인 화면 전송에 실패했어요. 불편하시겠지만 이번엔 DM으로 개인 화면을 보낼게요.\`\`\``);
+            this.sendDirectUI(ui);
         });
 
         return true;

@@ -94,7 +94,7 @@ export class ProcessRoundCycle extends SpyFallCycle
     this.round_step = ROUND_STEP.LAST_VOTE;
     await sleep(2000);
 
-    const last_vote_time = 6;
+    const last_vote_time = 60;
     let spy_remained_count = this.getGameData().getSpyRemainedCount();
 
     this.getGameData().clearVoteMap();
