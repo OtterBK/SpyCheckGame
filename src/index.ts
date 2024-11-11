@@ -22,6 +22,7 @@ client.once('ready', async () =>
   registerGlobalCommands();
 
   logger.info('Board game bot is ready!');
+  client.user?.setActivity(`/보드게임`);
 });
 
 client.on('interactionCreate', async (interaction) => 
