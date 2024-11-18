@@ -6,13 +6,22 @@ import { getLogger } from './utils/logger';
 const logger = getLogger("Main");
 import { handleCommand } from './managers/command_manager';
 import { relayInteraction } from './games/factory';
+import { KoreanbotsClient } from 'koreanbots';
 
-const client = new Client({ 
+const client = new KoreanbotsClient({ 
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildMessages,
-  ]
+  ],
+  koreanbots: {
+    api: {
+        token: process.env.KOREAN_BOT_TOKEN ?? ''
+    }
+  },
+  koreanbotsClient: {
+    updateInterval: 1800000 //10분마다 서버 수를 업데이트합니다. (기본값 30분)
+  }
 });
 
 client.once('ready', async () => 
